@@ -1,0 +1,13 @@
+ALTER TABLE `users` ADD COLUMN `is_super` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '1超级管理员，0否' AFTER `status`;
+ALTER TABLE `users` ADD COLUMN `uuid` CHAR(32) NULL AFTER `id`;
+ALTER TABLE `users` ADD COLUMN `group` VARCHAR(50) NULL DEFAULT NULL AFTER `uuid`;
+ALTER TABLE `users` DROP INDEX `name`;
+ALTER TABLE `users` ADD INDEX `uuid` (`uuid`);
+
+
+ALTER TABLE `products` ADD COLUMN `uuid` CHAR(32) NULL DEFAULT NULL AFTER `id`;
+ALTER TABLE `products` ADD COLUMN `user_uuid` CHAR(32) NULL DEFAULT NULL AFTER `uuid`;
+
+ALTER TABLE `document_cates` ADD COLUMN `user_id` INT(11) NOT NULL DEFAULT '0' AFTER `uid`;
+ALTER TABLE `documents` ADD COLUMN `user_id` INT(11) NOT NULL DEFAULT '0' AFTER `uid`;
+ALTER TABLE `documents` ADD COLUMN `document_cate_id` INT(11) NOT NULL DEFAULT '0' AFTER `category`;
