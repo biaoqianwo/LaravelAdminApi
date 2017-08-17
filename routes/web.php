@@ -51,9 +51,12 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::post('productTags/{uuid}', 'ProductTagsController@edit');
     Route::delete('productTags/{uuid}', 'ProductTagsController@destroy');
 
-    //files
-    Route::get('files',  'FilesController@index');
-    Route::post('files', 'FilesController@store');//上传文件 file:file|file[],post:media:0|1
+    //files 在form中（非素材库中）
+    Route::post('files/store', 'FilesController@store');//在form中（非素材库中）上传文件 file:file|file[]
+    Route::post('files/{uuid}/dec', 'FilesController@dec');//被替换，使用数量减一
+    //files 素材库中
+    Route::get('files', 'FilesController@index');//查看文件
+    Route::post('files/media', 'FilesController@media');//从素材库上传文件 file:file|file[]
     Route::post('files/{uuid}/using', 'FilesController@using');//使用
     Route::post('files/{uuid}/del', 'FilesController@del');//删除
     Route::post('files/{uuid}/move', 'FilesController@move');//移动

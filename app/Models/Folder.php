@@ -83,6 +83,7 @@ class Folder extends Model
     {
         $userId = $request->user->id;
 
+        // todo 嵌套查询...
         $folder = DB::table('files')->where('user_id', $userId)->where('uuid', $uuid)->value('folder');
         $result = DB::table('files')->where('user_id', $userId)->where('folder', $folder)->count();
         if ($result > 1) {
