@@ -18,7 +18,7 @@ class User extends Model
             return response()->json(config('tips.user.email.email'));
         }
 
-        $result = DB::table('users')->where('deleted_at', 0)->where('email', $email)->pluck('group');
+        $result = DB::table('users')->where('email', $email)->pluck('group');
         if (!$result) {
             return response()->json(config('tips.user.email.notRegister'));
         }
@@ -38,7 +38,7 @@ class User extends Model
             return response()->json(config('tips.user.name.max'));
         }
 
-        $result = DB::table('users')->where('deleted_at', 0)->where('name', $name)->pluck('group');
+        $result = DB::table('users')->where('name', $name)->pluck('group');
         if (!$result) {
             return response()->json(config('tips.user.name.notRegister'));
         }
@@ -110,7 +110,7 @@ class User extends Model
 
 
         if (iValidateString($emailOrName, 'email')) {
-            $result = DB::table('users')->where('deleted_at', 0)->where('group', $group)->where('email',
+            $result = DB::table('users')->where('group', $group)->where('email',
                 $emailOrName)->first();
             if (!$result) {
                 return response()->json(config('tips.user.email.notRegister'));
@@ -126,7 +126,7 @@ class User extends Model
                 ]
             );
         } else {
-            $result = DB::table('users')->where('deleted_at', 0)->where('group', $group)->where('name',
+            $result = DB::table('users')->where('group', $group)->where('name',
                 $emailOrName)->first();
             if (!$result) {
                 return response()->json(config('tips.user.name.notRegister'));
