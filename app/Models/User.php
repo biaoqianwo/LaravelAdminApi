@@ -133,7 +133,8 @@ class User extends Model
             if ($group) {
                 $result = DB::table('users')->where('group', $group)->where('name', $emailOrName)->first();
             } else {
-                $result = DB::table('users')->where('name', $emailOrName)->count();
+                $result = DB::table('users')->where('name', $emailOrName)->get();
+
                 if (count($result) != 1) {
                     return response()->json(config('tips.user.group.notUnique'));
                 }
