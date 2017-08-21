@@ -15,12 +15,11 @@ class ProductTag extends Model
         $datas = DB::table('product_tags')->whereIn('user_id', [0, $userId])->get();
         $count = DB::table('product_tags')->whereIn('user_id', [0, $userId])->count();
         if (!$count) {
-            return response()->json(config('tips.productTags.empty'));
+            return response()->json(config('tips.productTag.empty'));
         }
         return response()->json([
                 'code' => 0,
-                'msg' => 'All products tags',
-                'msg_zh' => '全部产品标签',
+                'msg' => 'All product tags',
                 'data' => $datas,
                 'count' => $count,
             ]
@@ -33,12 +32,12 @@ class ProductTag extends Model
         $name = $request->input('name', null);
         $values = $request->input('values', null);
         if (!$name) {
-            return response()->json(config('tips.productTags.name.required'));
+            return response()->json(config('tips.productTag.name.required'));
         }
 
         $count = DB::table('product_tags')->whereIn('user_id', [0, $userId])->where('name', $name)->count();
         if ($count) {
-            return response()->json(config('tips.productTags.existing'));
+            return response()->json(config('tips.productTag.existing'));
         }
 
         $data = [
@@ -54,7 +53,6 @@ class ProductTag extends Model
         return response()->json([
             'code' => 0,
             'msg' => 'The product tags store successfully',
-            'msg_zh' => '产品标签添加成功',
             'data' => $data,
         ]);
     }
@@ -65,13 +63,12 @@ class ProductTag extends Model
 
         $data = DB::table('product_tags')->whereIn('user_id', [0, $userId])->where('uuid', $uuid)->first();
         if (!$data) {
-            return response()->json(config('tips.productTags.empty'));
+            return response()->json(config('tips.productTag.empty'));
         }
 
         return response()->json([
                 'code' => 0,
                 'msg' => 'The product tags show successfully',
-                'msg_zh' => '产品标签查询成功',
                 'data' => $data,
             ]
         );
@@ -83,12 +80,12 @@ class ProductTag extends Model
         $name = $request->input('name', null);
         $values = $request->input('values', null);
         if (!$name) {
-            return response()->json(config('tips.productTags.name.required'));
+            return response()->json(config('tips.productTag.name.required'));
         }
 
         $count = DB::table('product_tags')->whereIn('user_id', [0, $userId])->where('name', $name)->count();
         if ($count) {
-            return response()->json(config('tips.productTags.existing'));
+            return response()->json(config('tips.productTag.existing'));
         }
 
         $data = [
@@ -100,12 +97,11 @@ class ProductTag extends Model
         }
         $result = DB::table('product_tags')->where('user_id', $userId)->where('uuid', $uuid)->update($data);
         if (!$result) {
-            return response()->json(config('tips.productTags.edit.failure'));
+            return response()->json(config('tips.productTag.edit.failure'));
         }
         return response()->json([
             'code' => 0,
             'msg' => 'The product tags edit successfully',
-            'msg_zh' => '产品标签编辑成功',
             'data' => $data,
         ]);
     }
@@ -116,12 +112,11 @@ class ProductTag extends Model
 
         $result = DB::table('product_tags')->where('user_id', $userId)->where('uuid', $uuid)->delete();
         if (!$result) {
-            return response()->json(config('tips.productTags.delete.failure'));
+            return response()->json(config('tips.productTag.delete.failure'));
         }
         return response()->json([
                 'code' => 0,
                 'msg' => 'The product tags delete successfully',
-                'msg_zh' => '产品标签删除成功',
             ]
         );
     }

@@ -76,7 +76,6 @@ class File extends Model
         return response()->json([
             'code' => 0,
             'msg' => 'The file store successfully',
-            'msg_zh' => '文件添加成功',
             'data' => $data,
         ]);
     }
@@ -91,7 +90,6 @@ class File extends Model
         return response()->json([
                 'code' => 0,
                 'msg' => 'The file decrement successfully',
-                'msg_zh' => '文件删除成功',
             ]
         );
     }
@@ -132,7 +130,6 @@ class File extends Model
         return response()->json([
                 'code' => 0,
                 'msg' => 'The files from ' . $offset . ',len ' . $limit,
-                'msg_zh' => '从 ' . $offset . ' 开始，长 ' . $limit . ' 的文件',
                 'data' => $datas,
                 'count' => $count,
             ]
@@ -161,7 +158,6 @@ class File extends Model
         return response()->json([
             'code' => 0,
             'msg' => 'The file store successfully',
-            'msg_zh' => '文件添加成功',
             'data' => $data,
         ]);
     }
@@ -176,7 +172,6 @@ class File extends Model
         return response()->json([
                 'code' => 0,
                 'msg' => 'The file increment successfully',
-                'msg_zh' => '文件使用成功',
             ]
         );
     }
@@ -191,7 +186,6 @@ class File extends Model
         return response()->json([
                 'code' => 0,
                 'msg' => 'The file decrement successfully',
-                'msg_zh' => '文件删除成功',
             ]
         );
     }
@@ -208,7 +202,6 @@ class File extends Model
         return response()->json([
                 'code' => 0,
                 'msg' => 'The file decrement successfully',
-                'msg_zh' => '文件移动成功',
             ]
         );
     }

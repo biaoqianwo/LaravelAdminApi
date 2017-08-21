@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class User extends Model
 {
@@ -181,8 +182,10 @@ class User extends Model
 
     public static function index(Request $request)
     {
-        $user = self::getUser($request->input('token'));
-
+        $user = $request->user;
+        if (!$user->is_super) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
         $datas = DB::table('users')->where('group', $user->group)->get();
         $count = DB::table('users')->where('group', $user->group)->count();
         return response()->json([
@@ -197,6 +200,11 @@ class User extends Model
 
     public static function store(Request $request)
     {
+        $user = $request->user;
+        if (!$user->is_super) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
         $email = $request->input('email');
         if (!$email) {
             return response()->json(config('tips.user.email.required'));
@@ -214,11 +222,6 @@ class User extends Model
         }
         if (!iValidateString($name, 'max:64')) {
             return response()->json(config('tips.user.name.max'));
-        }
-
-        $user = self::getUser($request->token);
-        if (!$user->is_super) {
-            return response()->json(config('tips.user.id.noPermission'));
         }
 
         $count = DB::table('users')->where('group', $user->group)->where('email', $email)->count();
@@ -252,7 +255,10 @@ class User extends Model
 
     public static function show(Request $request, $uuid)
     {
-        $user = self::getUser($request->input('token'));
+        $user = $request->user;
+        if (!$user->is_super) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
 
         $data = DB::table('users')->where('group', $user->group)->where('uuid', $uuid)->first();
         if (!$data) {
@@ -270,6 +276,11 @@ class User extends Model
 
     public static function edit(Request $request, $uuid)
     {
+        $user = $request->user;
+        if (!$user->is_super) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
         $email = $request->input('email');
         if ($email && !iValidateString($email, 'email')) {
             return response()->json(config('tips.user.email.email'));
@@ -281,11 +292,6 @@ class User extends Model
         }
         if ($name && !iValidateString($name, 'max:64')) {
             return response()->json(config('tips.user.name.max'));
-        }
-
-        $user = self::getUser($request->token);
-        if (!$user->is_super) {
-            return response()->json(config('tips.user.id.noPermission'));
         }
 
         $count = DB::table('users')->where('group', $user->group)->where('email', $email)->count();
@@ -317,7 +323,7 @@ class User extends Model
 
     public static function del(Request $request, $uuid)
     {
-        $user = self::getUser($request->token);
+        $user = $request->user;
         if (!$user->is_super) {
             return response()->json(config('tips.user.id.noPermission'));
         }

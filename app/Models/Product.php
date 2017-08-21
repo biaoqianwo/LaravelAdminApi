@@ -25,7 +25,6 @@ class Product extends Model
         return response()->json([
                 'code' => 0,
                 'msg' => 'The products from ' . $offset . ',len ' . $limit,
-                'msg_zh' => '从 ' . $offset . ' 开始，长 ' . $limit . ' 的产品',
                 'data' => $datas,
                 'count' => $count,
             ]
@@ -59,8 +58,7 @@ class Product extends Model
         $data['id'] = $id;
         return response()->json([
             'code' => 0,
-            'msg' => '',
-            'msg_zh' => '产品添加成功',
+            'msg' => 'The product store successfully',
             'data' => $data,
         ]);
     }
@@ -75,8 +73,7 @@ class Product extends Model
         }
         return response()->json([
                 'code' => 0,
-                'msg' => 'The product store successfully',
-                'msg_zh' => '产品添加成功',
+                'msg' => 'The product show successfully',
                 'data' => $data,
             ]
         );
@@ -111,7 +108,6 @@ class Product extends Model
         return response()->json([
             'code' => 0,
             'msg' => 'The product edit successfully',
-            'msg_zh' => '产品编辑成功',
             'data' => $data,
         ]);
     }
@@ -127,7 +123,6 @@ class Product extends Model
         return response()->json([
                 'code' => 0,
                 'msg' => 'The product delete successfully',
-                'msg_zh' => '产品删除成功',
             ]
         );
     }

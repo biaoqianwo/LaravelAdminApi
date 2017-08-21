@@ -121,7 +121,7 @@ return [
             ]
         ]
     ],
-    'productAttrs' => [
+    'productAttr' => [
         'name' => [
             'required' => [
                 'code' => 100300,
@@ -149,7 +149,7 @@ return [
             ]
         ]
     ],
-    'productTags' => [
+    'productTag' => [
         'name' => [
             'required' => [
                 'code' => 100400,
@@ -230,5 +230,33 @@ return [
                 'msg' => 'The folder delete unsuccessfully',
             ]
         ],
+    ],
+    'articleCate' => [
+        'name' => [
+            'required' => [
+                'code' => 100600,
+                'msg' => 'The article cates name should not be empty',
+            ]
+        ],
+        'empty' => [
+            'code' => 100601,
+            'msg' => 'The article cates is empty',
+        ],
+        'existing' => [
+            'code' => 100602,
+            'msg' => 'The article cates name is existing',
+        ],
+        'edit' => [
+            'failure' => [
+                'code' => 100603,
+                'msg' => 'The article cates edit unsuccessfully',
+            ]
+        ],
+        'delete' => [
+            'failure' => [
+                'code' => 100604,
+                'msg' => 'The article cates delete unsuccessfully',
+            ]
+        ]
     ],
 ];

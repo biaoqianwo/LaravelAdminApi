@@ -35,7 +35,6 @@ class Folder extends Model
         return response()->json([
             'code' => 0,
             'msg' => 'The file store successfully',
-            'msg_zh' => '文件夹添加成功',
             'data' => $data,
         ]);
     }
@@ -63,7 +62,6 @@ class Folder extends Model
         return response()->json([
             'code' => 0,
             'msg' => 'The file edit successfully',
-            'msg_zh' => '文件夹编辑成功',
         ]);
     }
 
@@ -97,7 +95,6 @@ class Folder extends Model
         return response()->json([
                 'code' => 0,
                 'msg' => 'The folder delete successfully',
-                'msg_zh' => '文件夹删除成功',
             ]
         );
     }

@@ -30,13 +30,6 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::post('users/{uuid}', 'UsersController@edit');
     Route::delete('users/{uuid}', 'UsersController@destroy');
 
-    //products
-    Route::get('products', 'ProductsController@index');
-    Route::post('products', 'ProductsController@store');
-    Route::get('products/{uuid}', 'ProductsController@show');
-    Route::post('products/{uuid}', 'ProductsController@edit');//上架下架也用此接口
-    Route::delete('products/{uuid}', 'ProductsController@destroy');
-
     //productAttrs
     Route::get('productAttrs', 'ProductAttrsController@index');
     Route::post('productAttrs', 'ProductAttrsController@store');
@@ -50,6 +43,21 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::get('productTags/{uuid}', 'ProductTagsController@show');
     Route::post('productTags/{uuid}', 'ProductTagsController@edit');
     Route::delete('productTags/{uuid}', 'ProductTagsController@destroy');
+
+    //products
+    Route::get('products', 'ProductsController@index');
+    Route::post('products', 'ProductsController@store');
+    Route::get('products/{uuid}', 'ProductsController@show');
+    Route::post('products/{uuid}', 'ProductsController@edit');//上架下架也用此接口
+    Route::delete('products/{uuid}', 'ProductsController@destroy');
+
+    //articleCates
+    Route::get('articleCates', 'ArticleCatesController@index');
+    Route::post('articleCates', 'ArticleCatesController@store');
+    Route::get('articleCates/{uuid}', 'ArticleCatesController@show');
+    Route::post('articleCates/{uuid}', 'ArticleCatesController@edit');
+    Route::delete('articleCates/{uuid}', 'ArticleCatesController@destroy');
+
 
     //files 在form中（非素材库中）
     Route::post('files/store', 'FilesController@store');//在form中（非素材库中）上传文件 file:file|file[]
