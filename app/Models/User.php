@@ -235,7 +235,7 @@ class User extends Model
             'group' => $user->group,
             'email' => $email,
             'name' => $name,
-            'pwd' => '123',
+            'pwd' => iMd5('1234'),
             'created_at' => time(),
             'updated_at' => time(),
         ];
