@@ -50,7 +50,7 @@ class User extends Model
     {
         $email = $request->input('email');
         $name = $request->input('name');
-        $pwd = $request->input('pwd');
+        $pwd = $request->input('password');
 
         $result = User::existEmail($request);
         $tmp = json_decode($result->getContent());
@@ -97,7 +97,7 @@ class User extends Model
     {
         $group = $request->input('group');
         $emailOrName = $request->input('name');
-        $pwd = $request->input('pwd');
+        $pwd = $request->input('password');
         if (!$emailOrName) {
             return response()->json(config('tips.user.emailOrName.required'));
         }
