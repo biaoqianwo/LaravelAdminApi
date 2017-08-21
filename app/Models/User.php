@@ -142,7 +142,7 @@ class User extends Model
             if (!$result) {
                 return response()->json(config('tips.user.name.notRegister'));
             }
-            if ($result->pwd != $pwd) {
+            if ($result->pwd != iMd5($pwd)) {
                 return response()->json(config('tips.user.password.notRight'));
             }
             return response()->json([
