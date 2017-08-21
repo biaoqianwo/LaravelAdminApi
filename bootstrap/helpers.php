@@ -66,7 +66,7 @@ function iCheckFile(\Illuminate\Http\UploadedFile $file)
     return true;
 }
 
-function iGenerateFileUrl($uuid, $name = null)
+function iGenerateFileUrl($userId, $name = null)
 {
-    return !$name ? null : config('app.url') . 'storage' . DIRECTORY_SEPARATOR . $name . '###' . $uuid;
+    return !$name ? null : config('app.url') . 'storage' . '/' . $userId . '/' . $name . '###' . $userId;
 }

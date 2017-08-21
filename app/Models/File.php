@@ -50,7 +50,7 @@ class File extends Model
         ];
         DB::table('files')->insertGetId($data);
         //生成并返回绝对地址.'###'.$uuid
-        $data['url'] = iGenerateFileUrl($uuid, $name);
+        $data['url'] = iGenerateFileUrl($userId, $name);
         return $data;
     }
 
@@ -113,7 +113,7 @@ class File extends Model
             'asc')->union($files)->get();
 
         foreach ($datas as &$data) {
-            $data->url = iGenerateFileUrl($data->uuid, $data->name);
+            $data->url = iGenerateFileUrl($data->user_id, $data->name);
         }
         $count = 1;//默认有数据
         if ($offset == 0) {
