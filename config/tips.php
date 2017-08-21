@@ -22,10 +22,10 @@ return [
             ],
         ],
         'group' => [
-            'required' => [
+            'notUnique' => [
                 'code' => 100102,
-                'msg' => 'The email should not be empty',
-                'msg_zh' => '组织不能为空',
+                'msg' => 'The group is not unique',
+                'msg_zh' => '组织不唯一，请输入组织',
             ],
         ],
         'email' => [

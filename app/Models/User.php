@@ -18,7 +18,8 @@ class User extends Model
             return response()->json(config('tips.user.email.email'));
         }
 
-        $result = DB::table('users')->where('email', $email)->pluck('group');
+        $result = DB::table('users')->where('email', $email)->value('group');
+
         if (!$result) {
             return response()->json(config('tips.user.email.notRegister'));
         }
@@ -38,11 +39,11 @@ class User extends Model
             return response()->json(config('tips.user.name.max'));
         }
 
-        $result = DB::table('users')->where('name', $name)->pluck('group');
+        $result = DB::table('users')->where('name', $name)->value('group');
         if (!$result) {
             return response()->json(config('tips.user.name.notRegister'));
         }
-        return response()->json(array_merge(['data' => $result], config('tips.user.email.registered')));
+        return response()->json(array_merge(['data' => $result], config('tips.user.name.registered')));
     }
 
     public static function register(Request $request)
@@ -95,12 +96,8 @@ class User extends Model
     public static function login(Request $request)
     {
         $group = $request->input('group');
-        $emailOrName = $request->input('emailOrName');
+        $emailOrName = $request->input('name');
         $pwd = $request->input('pwd');
-
-        if (!$group) {
-            return response()->json(config('tips.user.group.required'));
-        }
         if (!$emailOrName) {
             return response()->json(config('tips.user.emailOrName.required'));
         }
@@ -110,8 +107,15 @@ class User extends Model
 
 
         if (iValidateString($emailOrName, 'email')) {
-            $result = DB::table('users')->where('group', $group)->where('email',
-                $emailOrName)->first();
+            if ($group) {
+                $result = DB::table('users')->where('group', $group)->where('email', $emailOrName)->first();
+            } else {
+                $result = DB::table('users')->where('email', $emailOrName)->get();
+                if (count($result) != 1) {
+                    return response()->json(config('tips.user.group.notUnique'));
+                }
+                $result = $result[0];
+            }
             if (!$result) {
                 return response()->json(config('tips.user.email.notRegister'));
             }
@@ -126,8 +130,15 @@ class User extends Model
                 ]
             );
         } else {
-            $result = DB::table('users')->where('group', $group)->where('name',
-                $emailOrName)->first();
+            if ($group) {
+                $result = DB::table('users')->where('group', $group)->where('name', $emailOrName)->first();
+            } else {
+                $result = DB::table('users')->where('name', $emailOrName)->count();
+                if (count($result) != 1) {
+                    return response()->json(config('tips.user.group.notUnique'));
+                }
+                $result = $result[0];
+            }
             if (!$result) {
                 return response()->json(config('tips.user.name.notRegister'));
             }
