@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redis;
+
+//use Illuminate\Support\Facades\Redis;
 
 class User extends Model
 {
@@ -166,16 +167,61 @@ class User extends Model
         return $rs;
     }
 
-    public static function getUidByToken($token)
-    {
-        $uuid = iDecodeToken($token)['uuid'];
-        return DB::table('users')->where('uuid', $uuid)->value('id');
-    }
-
     public static function getUser($token)
     {
         $uuid = iDecodeToken($token)['uuid'];
         return DB::table('users')->where('uuid', $uuid)->first();
+    }
+
+    /**
+     * 根据管理员相同组下的管理员IDs
+     * @param $group
+     * @return array
+     */
+    public static function getUidsByGroup($group)
+    {
+        return DB::table('users')->where('group', $group)->pluck('id')->toArray();
+    }
+
+
+    /**
+     * 判断用户是否有权限
+     * @param $user
+     * @param $model
+     * @param int $inPermissions
+     * @return bool
+     */
+    public static function hasPermission($user, $model, $inPermissions = 0)
+    {
+        if (!$model || empty($model->user_id) || empty($model->permissionName)) {
+            return false;
+        }
+
+
+        if ($user->id == $model->user_id) {//自己添加
+//            if ($inPermissions) {//强权限（且须有权限）
+//                $permissions = json_decode($user->permissions, true);
+//                if (in_array($model->permissionName, $permissions)) {
+//                    return true;
+//                }
+//                return false;
+//            }
+            return true;
+        } elseif ($user->is_super) {
+            //超级管理员有权限
+            $tmp = self::find($model->user_id);
+            if ($user->group == $tmp->group) {
+                return true;
+            }
+        } else {
+            //不是超级管理员，不是自己：被赋予权限的有权限
+            //$tmp = self::find($model->user_id);
+            //$permissions = json_decode($user->permissions, true);
+            //if ($user->group == $tmp->group && in_array($model->permissionName, $permissions)) {
+            //    return true;
+            //}
+        }
+        return false;
     }
 
     ////////////////////////////////////////////////////////////////

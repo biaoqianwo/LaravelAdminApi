@@ -70,3 +70,13 @@ function iGenerateFileUrl($userId, $name = null)
 {
     return !$name ? null : config('app.url') . 'storage' . '/' . $userId . '/' . $name . '###' . $userId;
 }
+
+/**
+ * @param $class
+ * @param $function
+ * @return string
+ */
+function generatePermissionName($class,$function){
+    //App\Models\ArticleCate==>ArticleCate
+    return array_last(explode('\\',$class)).'.'.$function;
+}

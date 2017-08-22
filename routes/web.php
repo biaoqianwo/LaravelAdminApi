@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return 'hello world';
+    return '正在紧张开发中......可联系QQ:704872038';
 });
 
 

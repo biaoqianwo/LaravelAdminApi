@@ -10,6 +10,10 @@ return [
             'code' => 100002,
             'msg' => 'The token is invalid',
         ],
+        'noPermission' => [
+            'code' => 100003,
+            'msg' => 'The current user has no permission',
+        ],
     ],
     'user' => [
         'id' => [
