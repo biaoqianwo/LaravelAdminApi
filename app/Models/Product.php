@@ -11,8 +11,8 @@ class Product extends Model
     public static function index(Request $request)
     {
         $userId = $request->user->id;
-        $offset = $request->input('start', 0);
-        $limit = $request->input('len', 10);
+        $offset = $request->input('pos', 0);
+        $limit = $request->input('count', 10);
 
         $datas = DB::table('products')->where('user_id', $userId)->offset($offset)->limit($limit)->get();
         $count = 1;//默认有数据

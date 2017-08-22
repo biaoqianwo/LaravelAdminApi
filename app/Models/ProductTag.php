@@ -52,7 +52,7 @@ class ProductTag extends Model
         $data['id'] = $id;
         return response()->json([
             'code' => 0,
-            'msg' => 'The product tags store successfully',
+            'msg' => 'The product tag store successfully',
             'data' => $data,
         ]);
     }
@@ -68,7 +68,7 @@ class ProductTag extends Model
 
         return response()->json([
                 'code' => 0,
-                'msg' => 'The product tags show successfully',
+                'msg' => 'The product tag show successfully',
                 'data' => $data,
             ]
         );
@@ -101,7 +101,7 @@ class ProductTag extends Model
         }
         return response()->json([
             'code' => 0,
-            'msg' => 'The product tags edit successfully',
+            'msg' => 'The product tag edit successfully',
             'data' => $data,
         ]);
     }
@@ -116,7 +116,7 @@ class ProductTag extends Model
         }
         return response()->json([
                 'code' => 0,
-                'msg' => 'The product tags delete successfully',
+                'msg' => 'The product tag delete successfully',
             ]
         );
     }

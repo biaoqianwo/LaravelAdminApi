@@ -58,6 +58,13 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::post('articleCates/{uuid}', 'ArticleCatesController@edit');
     Route::delete('articleCates/{uuid}', 'ArticleCatesController@destroy');
 
+    //articleTags
+    Route::get('articleTags', 'ArticleTagsController@index');
+    Route::post('articleTags', 'ArticleTagsController@store');
+    Route::get('articleTags/{uuid}', 'ArticleTagsController@show');
+    Route::post('articleTags/{uuid}', 'ArticleTagsController@edit');
+    Route::delete('articleTags/{uuid}', 'ArticleTagsController@destroy');
+
 
     //files 在form中（非素材库中）
     Route::post('files/store', 'FilesController@store');//在form中（非素材库中）上传文件 file:file|file[]

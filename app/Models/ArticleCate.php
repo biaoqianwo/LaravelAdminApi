@@ -50,7 +50,7 @@ class ArticleCate extends Model
         $data['id'] = $id;
         return response()->json([
             'code' => 0,
-            'msg' => 'The article cates store successfully',
+            'msg' => 'The article cate store successfully',
             'data' => $data,
         ]);
     }
@@ -66,7 +66,7 @@ class ArticleCate extends Model
 
         return response()->json([
                 'code' => 0,
-                'msg' => 'The article cates show successfully',
+                'msg' => 'The article cate show successfully',
                 'data' => $data,
             ]
         );
@@ -95,7 +95,7 @@ class ArticleCate extends Model
         }
         return response()->json([
             'code' => 0,
-            'msg' => 'The article cates edit successfully',
+            'msg' => 'The article cate edit successfully',
             'data' => $data,
         ]);
     }
@@ -110,7 +110,7 @@ class ArticleCate extends Model
         }
         return response()->json([
                 'code' => 0,
-                'msg' => 'The article cates delete successfully',
+                'msg' => 'The article cate delete successfully',
             ]
         );
     }

@@ -99,8 +99,8 @@ class File extends Model
         $userId = $request->user->id;
         $folder = $request->input('folder', '/');
         $folder = Folder::formatFolder($folder);
-        $offset = $request->input('start', 0);
-        $limit = $request->input('len', 10);
+        $offset = $request->input('pos', 0);
+        $limit = $request->input('count', 10);
 
         $files = DB::table('files')->where('user_id', $userId)->where('folder', 'like',
             $folder . '%')->whereNotNull('name')->orderBy('name',

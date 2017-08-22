@@ -153,27 +153,27 @@ return [
         'name' => [
             'required' => [
                 'code' => 100400,
-                'msg' => 'The product tags name should not be empty',
+                'msg' => 'The product tag name should not be empty',
             ]
         ],
         'empty' => [
             'code' => 100401,
-            'msg' => 'The product tags is empty',
+            'msg' => 'The product tag is empty',
         ],
         'existing' => [
             'code' => 100402,
-            'msg' => 'The product tags name is existing',
+            'msg' => 'The product tag name is existing',
         ],
         'edit' => [
             'failure' => [
                 'code' => 100403,
-                'msg' => 'The product tags edit unsuccessfully',
+                'msg' => 'The product tag edit unsuccessfully',
             ]
         ],
         'delete' => [
             'failure' => [
                 'code' => 100404,
-                'msg' => 'The product tags delete unsuccessfully',
+                'msg' => 'The product tag delete unsuccessfully',
             ]
         ]
     ],
@@ -235,27 +235,55 @@ return [
         'name' => [
             'required' => [
                 'code' => 100600,
-                'msg' => 'The article cates name should not be empty',
+                'msg' => 'The article cate name should not be empty',
             ]
         ],
         'empty' => [
             'code' => 100601,
-            'msg' => 'The article cates is empty',
+            'msg' => 'The article cate is empty',
         ],
         'existing' => [
             'code' => 100602,
-            'msg' => 'The article cates name is existing',
+            'msg' => 'The article cate name is existing',
         ],
         'edit' => [
             'failure' => [
                 'code' => 100603,
-                'msg' => 'The article cates edit unsuccessfully',
+                'msg' => 'The article cate edit unsuccessfully',
             ]
         ],
         'delete' => [
             'failure' => [
                 'code' => 100604,
-                'msg' => 'The article cates delete unsuccessfully',
+                'msg' => 'The article cate delete unsuccessfully',
+            ]
+        ]
+    ],
+    'articleTag' => [
+        'name' => [
+            'required' => [
+                'code' => 100600,
+                'msg' => 'The article tag name should not be empty',
+            ]
+        ],
+        'empty' => [
+            'code' => 100601,
+            'msg' => 'The article tag is empty',
+        ],
+        'existing' => [
+            'code' => 100602,
+            'msg' => 'The article tag name is existing',
+        ],
+        'edit' => [
+            'failure' => [
+                'code' => 100603,
+                'msg' => 'The article tag edit unsuccessfully',
+            ]
+        ],
+        'delete' => [
+            'failure' => [
+                'code' => 100604,
+                'msg' => 'The article tag delete unsuccessfully',
             ]
         ]
     ],
