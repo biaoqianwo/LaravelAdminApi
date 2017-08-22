@@ -215,31 +215,31 @@ return [
             ]
         ]
     ],
-    'productTag' => [
+    'productParam' => [
         'name' => [
             'required' => [
                 'code' => 100306,
-                'msg' => 'The product tag name should not be empty',
+                'msg' => 'The product param name should not be empty',
             ]
         ],
         'empty' => [
             'code' => 100307,
-            'msg' => 'The product tag is empty',
+            'msg' => 'The product param is empty',
         ],
         'existing' => [
             'code' => 100308,
-            'msg' => 'The product tag name is existing',
+            'msg' => 'The product param name is existing',
         ],
         'edit' => [
             'failure' => [
                 'code' => 100309,
-                'msg' => 'The product tag edit unsuccessfully',
+                'msg' => 'The product param edit unsuccessfully',
             ]
         ],
         'delete' => [
             'failure' => [
                 'code' => 100310,
-                'msg' => 'The product tag delete unsuccessfully',
+                'msg' => 'The product param delete unsuccessfully',
             ]
         ]
     ],

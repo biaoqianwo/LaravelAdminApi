@@ -6,20 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ProductTag extends Model
+class ProductParam extends Model
 {
     public static function index(Request $request)
     {
         $userId = $request->user->id;
 
-        $datas = DB::table('product_tags')->whereIn('user_id', [0, $userId])->get();
-        $count = DB::table('product_tags')->whereIn('user_id', [0, $userId])->count();
+        $datas = DB::table('product_params')->whereIn('user_id', [0, $userId])->get();
+        $count = DB::table('product_params')->whereIn('user_id', [0, $userId])->count();
         if (!$count) {
-            return response()->json(config('tips.productTag.empty'));
+            return response()->json(config('tips.productParam.empty'));
         }
         return response()->json([
                 'code' => 0,
-                'msg' => 'All product tags',
+                'msg' => 'All product params',
                 'data' => $datas,
                 'count' => $count,
             ]
@@ -32,12 +32,12 @@ class ProductTag extends Model
         $name = $request->input('name', null);
         $values = $request->input('values', null);
         if (!$name) {
-            return response()->json(config('tips.productTag.name.required'));
+            return response()->json(config('tips.productParam.name.required'));
         }
 
-        $count = DB::table('product_tags')->whereIn('user_id', [0, $userId])->where('name', $name)->count();
+        $count = DB::table('product_params')->whereIn('user_id', [0, $userId])->where('name', $name)->count();
         if ($count) {
-            return response()->json(config('tips.productTag.existing'));
+            return response()->json(config('tips.productParam.existing'));
         }
 
         $data = [
@@ -48,11 +48,11 @@ class ProductTag extends Model
             'values' => $values,
             'updated_at' => time(),
         ];
-        $id = DB::table('product_tags')->insertGetId($data);
+        $id = DB::table('product_params')->insertGetId($data);
         $data['id'] = $id;
         return response()->json([
             'code' => 0,
-            'msg' => 'The product tag store successfully',
+            'msg' => 'The product param store successfully',
             'data' => $data,
         ]);
     }
@@ -61,14 +61,14 @@ class ProductTag extends Model
     {
         $userId = $request->user->id;
 
-        $data = DB::table('product_tags')->whereIn('user_id', [0, $userId])->where('uuid', $uuid)->first();
+        $data = DB::table('product_params')->whereIn('user_id', [0, $userId])->where('uuid', $uuid)->first();
         if (!$data) {
-            return response()->json(config('tips.productTag.empty'));
+            return response()->json(config('tips.productParam.empty'));
         }
 
         return response()->json([
                 'code' => 0,
-                'msg' => 'The product tag show successfully',
+                'msg' => 'The product param show successfully',
                 'data' => $data,
             ]
         );
@@ -80,12 +80,12 @@ class ProductTag extends Model
         $name = $request->input('name', null);
         $values = $request->input('values', null);
         if (!$name) {
-            return response()->json(config('tips.productTag.name.required'));
+            return response()->json(config('tips.productParam.name.required'));
         }
 
-        $count = DB::table('product_tags')->whereIn('user_id', [0, $userId])->where('name', $name)->count();
+        $count = DB::table('product_params')->whereIn('user_id', [0, $userId])->where('name', $name)->count();
         if ($count) {
-            return response()->json(config('tips.productTag.existing'));
+            return response()->json(config('tips.productParam.existing'));
         }
 
         $data = [
@@ -95,13 +95,13 @@ class ProductTag extends Model
         if ($values) {
             $data = array_merge(['values' => $values], $data);
         }
-        $result = DB::table('product_tags')->where('user_id', $userId)->where('uuid', $uuid)->update($data);
+        $result = DB::table('product_params')->where('user_id', $userId)->where('uuid', $uuid)->update($data);
         if (!$result) {
-            return response()->json(config('tips.productTag.edit.failure'));
+            return response()->json(config('tips.productParam.edit.failure'));
         }
         return response()->json([
             'code' => 0,
-            'msg' => 'The product tag edit successfully',
+            'msg' => 'The product param edit successfully',
             'data' => $data,
         ]);
     }
@@ -110,13 +110,13 @@ class ProductTag extends Model
     {
         $userId = $request->user->id;
 
-        $result = DB::table('product_tags')->where('user_id', $userId)->where('uuid', $uuid)->delete();
+        $result = DB::table('product_params')->where('user_id', $userId)->where('uuid', $uuid)->delete();
         if (!$result) {
-            return response()->json(config('tips.productTag.delete.failure'));
+            return response()->json(config('tips.productParam.delete.failure'));
         }
         return response()->json([
                 'code' => 0,
-                'msg' => 'The product tag delete successfully',
+                'msg' => 'The product param delete successfully',
             ]
         );
     }

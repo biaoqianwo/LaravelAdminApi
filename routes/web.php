@@ -58,12 +58,12 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::post('productAttrs/{uuid}', 'ProductAttrsController@edit');
     Route::delete('productAttrs/{uuid}', 'ProductAttrsController@destroy');
 
-    //productTags
-    Route::get('productTags', 'ProductTagsController@index');
-    Route::post('productTags', 'ProductTagsController@store');
-    Route::get('productTags/{uuid}', 'ProductTagsController@show');
-    Route::post('productTags/{uuid}', 'ProductTagsController@edit');
-    Route::delete('productTags/{uuid}', 'ProductTagsController@destroy');
+    //productParams
+    Route::get('productParams', 'ProductParamsController@index');
+    Route::post('productParams', 'ProductParamsController@store');
+    Route::get('productParams/{uuid}', 'ProductParamsController@show');
+    Route::post('productParams/{uuid}', 'ProductParamsController@edit');
+    Route::delete('productParams/{uuid}', 'ProductParamsController@destroy');
 
     //products
     Route::get('products', 'ProductsController@index');

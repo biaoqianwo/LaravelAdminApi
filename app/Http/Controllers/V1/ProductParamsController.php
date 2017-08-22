@@ -4,10 +4,10 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\AdminAuthMiddleware;
-use App\Models\ProductTag;
+use App\Models\ProductParam;
 use Illuminate\Http\Request;
 
-class ProductTagsController extends Controller
+class ProductParamsController extends Controller
 {
     public function __construct()
     {
@@ -16,26 +16,26 @@ class ProductTagsController extends Controller
 
     public function index(Request $request)
     {
-        return ProductTag::index($request);
+        return ProductParam::index($request);
     }
 
     public function store(Request $request)
     {
-        return ProductTag::store($request);
+        return ProductParam::store($request);
     }
 
     public function show(Request $request, $uuid)
     {
-        return ProductTag::show($request, $uuid);
+        return ProductParam::show($request, $uuid);
     }
 
     public function edit(Request $request, $uuid)
     {
-        return ProductTag::edit($request, $uuid);
+        return ProductParam::edit($request, $uuid);
     }
 
     public function destroy(Request $request, $uuid)
     {
-        return ProductTag::del($request, $uuid);
+        return ProductParam::del($request, $uuid);
     }
 }

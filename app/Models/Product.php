@@ -54,7 +54,7 @@ class Product extends Model
             'attrs' => $request->input('attrs', null),
             'alias' => $request->input('alias', null),
             'picture' => $request->input('picture', null),
-            'tags' => $request->input('tags', null),
+            'params' => $request->input('params', null),
             'url' => $request->input('url', null),
             'detail' => $request->input('detail', null),
             'status' => $request->input('status', 1),
@@ -116,8 +116,8 @@ class Product extends Model
         if (!empty($request['attrs'])) {
             $data['attrs'] = $request['attrs'];
         }
-        if (!empty($request['tags'])) {
-            $data['tags'] = $request['tags'];
+        if (!empty($request['params'])) {
+            $data['params'] = $request['params'];
         }
         if (!empty($request['url'])) {
             $data['url'] = $request['url'];
