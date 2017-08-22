@@ -12,22 +12,26 @@ use Illuminate\Support\Facades\DB;
  * show：查看同一个组的某个记录
  * edit：超级管理员和自己可以操作
  * del：超级管理员
+ * 验证顺序：先字段，再权限
  * Class ArticleCate
  * @package App\Models
  */
 class ArticleCate extends Model
 {
-    public static function index(Request $request)
+    public static function index(Request $request, $offset = 0, $limit = 1000)
     {
-        $userIds = User::getUidsByGroup($request->user);
+        $userIds = User::getUidsInSameGroup($request->user);
+
         $count = DB::table('article_cates')->whereIn('user_id', $userIds)->count();
         if (!$count) {
             return response()->json(config('tips.articleCate.empty'));
         }
-        $datas = DB::table('article_cates')->whereIn('user_id', $userIds)->get();
+
+        $datas = DB::table('article_cates')->whereIn('user_id', $userIds)->offset($offset)->limit($limit)->get();
+
         return response()->json([
                 'code' => 0,
-                'msg' => 'All article cates',
+                'msg' => 'The article cate from ' . $offset . ',len ' . $limit,
                 'data' => $datas,
                 'count' => $count,
             ]
@@ -36,13 +40,12 @@ class ArticleCate extends Model
 
     public static function store(Request $request)
     {
-        $userId = $request->user->id;
         $name = $request->input('name', null);
         if (!$name) {
             return response()->json(config('tips.articleCate.name.required'));
         }
 
-        $userIds = User::getUidsByGroup($request->user);
+        $userIds = User::getUidsInSameGroup($request->user);
         $count = DB::table('article_cates')->whereIn('user_id', $userIds)->where('name', $name)->count();
         if ($count) {
             return response()->json(config('tips.articleCate.existing'));
@@ -50,7 +53,7 @@ class ArticleCate extends Model
 
         $data = [
             'uuid' => iGenerateUuid(),
-            'user_id' => $userId,
+            'user_id' => $request->user->id,
             'name' => $name,
             'color' => $request->input('color', null),
             'icon' => $request->input('icon', null),
@@ -62,8 +65,8 @@ class ArticleCate extends Model
             'created_at' => time(),
             'updated_at' => time(),
         ];
-        $id = DB::table('article_cates')->insertGetId($data);
-        $data['id'] = $id;
+        DB::table('article_cates')->insertGetId($data);
+
         return response()->json([
             'code' => 0,
             'msg' => 'The article cate store successfully',
@@ -73,28 +76,46 @@ class ArticleCate extends Model
 
     public static function show(Request $request, $uuid)
     {
-        $model = DB::table('article_cates')->where('uuid', $uuid)->first();
-        if (!$model) {
+        $data = DB::table('article_cates')->where('uuid', $uuid)->first();
+        if (!$data) {
             return response()->json(config('tips.articleCate.empty'));
         }
 
-        $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
-        $hasPermission = User::hasPermission($request->user, $model);
+        $data->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $data);
         if (!$hasPermission) {
             return response()->json(config('tips.user.id.noPermission'));
         }
+        unset($data->permissionName);
 
-        unset($model->permissionName);
         return response()->json([
                 'code' => 0,
                 'msg' => 'The article cate show successfully',
-                'data' => $model,
+                'data' => $data,
             ]
         );
     }
 
     public static function edit(Request $request, $uuid)
     {
+        $name = $request->input('name', null);
+        $color = $request->input('color', null);
+        $icon = $request->input('icon', null);
+        $poster = $request->input('poster', null);
+        $intro = $request->input('intro', null);
+        $keywords = $request->input('keywords', null);
+        $description = $request->input('description', null);
+        $status = $request->input('status', -1);
+        if (!$name) {
+            return response()->json(config('tips.articleCate.name.required'));
+        }
+
+        $userIds = User::getUidsInSameGroup($request->user->group);
+        $count = DB::table('article_cates')->whereIn('user_id', $userIds)->where('name', $name)->count();
+        if ($count) {
+            return response()->json(config('tips.articleCate.existing'));
+        }
+
         $model = DB::table('article_cates')->where('uuid', $uuid)->first();
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model);
@@ -102,25 +123,37 @@ class ArticleCate extends Model
             return response()->json(config('tips.user.id.noPermission'));
         }
 
-        $name = $request->input('name', null);
+        $data = ['updated_at' => time()];
         if (!$name) {
-            return response()->json(config('tips.articleCate.name.required'));
+            $data['name'] = $name;
+        }
+        if (!$color) {
+            $data['color'] = $color;
+        }
+        if (!$icon) {
+            $data['icon'] = $icon;
+        }
+        if (!$poster) {
+            $data['poster'] = $poster;
+        }
+        if (!$intro) {
+            $data['intro'] = $intro;
+        }
+        if (!$keywords) {
+            $data['keywords'] = $keywords;
+        }
+        if (!$description) {
+            $data['description'] = $description;
+        }
+        if ($status >= 0) {
+            $data['status'] = $status;
         }
 
-        $userIds = User::getUidsByGroup($request->user->group);
-        $count = DB::table('article_cates')->whereIn('user_id', $userIds)->where('name', $name)->count();
-        if ($count) {
-            return response()->json(config('tips.articleCate.existing'));
-        }
-
-        $data = [
-            'name' => $name,
-            'updated_at' => time(),
-        ];
         $result = DB::table('article_cates')->where('uuid', $uuid)->update($data);
         if (!$result) {
             return response()->json(config('tips.articleCate.edit.failure'));
         }
+
         return response()->json([
             'code' => 0,
             'msg' => 'The article cate edit successfully',
@@ -141,6 +174,7 @@ class ArticleCate extends Model
         if (!$result) {
             return response()->json(config('tips.articleCate.delete.failure'));
         }
+
         return response()->json([
                 'code' => 0,
                 'msg' => 'The article cate delete successfully',

@@ -178,9 +178,9 @@ class User extends Model
      * @param $user
      * @return array
      */
-    public static function getUidsByGroup($user)
+    public static function getUidsInSameGroup($user)
     {
-        if ($user->multi_user) {
+        if ($user->user_num > 1) {
             return DB::table('users')->where('group', $user->group)->pluck('id')->toArray();
         }
         return [$user->id];

@@ -8,23 +8,19 @@ use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
-    public static function index(Request $request)
+    public static function index(Request $request, $offset = 0, $limit = 1000)
     {
-        $userId = $request->user->id;
-        $offset = $request->input('pos', 0);
-        $limit = $request->input('count', 10);
+        $userIds = User::getUidsInSameGroup($request->user);
 
-        $datas = DB::table('products')->where('user_id', $userId)->offset($offset)->limit($limit)->get();
-        $count = 1;//默认有数据
-        if ($offset == 0) {
-            $count = DB::table('products')->where('user_id', $userId)->count();
-        }
+        $count = DB::table('products')->whereIn('user_id', $userIds)->count();
         if (!$count) {
             return response()->json(config('tips.product.empty'));
         }
+
+        $datas = DB::table('products')->whereIn('user_id', $userIds)->offset($offset)->limit($limit)->get();
         return response()->json([
                 'code' => 0,
-                'msg' => 'The products from ' . $offset . ',len ' . $limit,
+                'msg' => 'The product from ' . $offset . ',len ' . $limit,
                 'data' => $datas,
                 'count' => $count,
             ]
@@ -33,21 +29,22 @@ class Product extends Model
 
     public static function store(Request $request)
     {
-        $userId = $request->user->id;
         $name = $request->input('name');
         $code = $request->input('code');
         if (!$name) {
             return response()->json(config('tips.product.name.required'));
         }
 
-        if (!empty($request['code'])) {
-            $count = DB::table('products')->where('user_id', $userId)->where('code', $code)->count();
+        $userIds = User::getUidsInSameGroup($request->user);
+        if (!$code) {
+            $count = DB::table('products')->whereIn('user_id', $userIds)->where('code', $code)->count();
             if ($count) {
-                return response()->json(config('tips.product.existing'));
+                return response()->json(config('tips.product.code.existing'));
             }
         }
+
         $data = [
-            'user_id' => $userId,
+            'user_id' => $request->user->id,
             'uuid' => iGenerateUuid(),
             'code' => $code,
             'name' => $name,
@@ -61,8 +58,8 @@ class Product extends Model
             'created_at' => time(),
             'updated_at' => time(),
         ];
-        $id = DB::table('products')->insertGetId($data);
-        $data['id'] = $id;
+        DB::table('products')->insertGetId($data);
+
         return response()->json([
             'code' => 0,
             'msg' => 'The product store successfully',
@@ -72,12 +69,18 @@ class Product extends Model
 
     public static function show(Request $request, $uuid)
     {
-        $userId = $request->user->id;
-
-        $data = DB::table('products')->where('user_id', $userId)->where('uuid', $uuid)->first();
+        $data = DB::table('products')->where('uuid', $uuid)->first();
         if (!$data) {
             return response()->json(config('tips.product.empty'));
         }
+
+        $data->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $data);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+        unset($data->permissionName);
+
         return response()->json([
                 'code' => 0,
                 'msg' => 'The product show successfully',
@@ -88,51 +91,64 @@ class Product extends Model
 
     public static function edit(Request $request, $uuid)
     {
-        $userId = $request->user->id;
-        $request = $request->all();
-        if (empty($request['name'])) {
+        $name = $request->input('name', null);
+        $code = $request->input('code', null);
+        $alias = $request->input('alias', null);
+        $attrs = $request->input('attrs', null);
+        $params = $request->input('params', null);
+        $url = $request->input('url', null);
+        $detail = $request->input('detail', null);
+        $status = $request->input('status', -1);
+        if (!$name) {
             return response()->json(config('tips.product.name.required'));
         }
 
-        //todo 非添加者应该可以操作(多用户)
-
-        if (!empty($request['code'])) {
-            $count = DB::table('products')->where('user_id', $userId)->where('code', $request['code'])->count();
+        $userIds = User::getUidsInSameGroup($request->user->group);
+        if ($code) {
+            $count = DB::table('products')->whereIn('user_id', $userIds)->where('code', $code)->count();
             if ($count) {
                 return response()->json(config('tips.product.existing'));
             }
         }
 
-        $data = ['updated_at' => time()];
-        if (!empty($request['code'])) {
-            $data['code'] = $request['code'];
-        }
-        if (!empty($request['name'])) {
-            $data['name'] = $request['name'];
-        }
-        if (!empty($request['alias'])) {
-            $data['alias'] = $request['alias'];
-        }
-        if (!empty($request['attrs'])) {
-            $data['attrs'] = $request['attrs'];
-        }
-        if (!empty($request['params'])) {
-            $data['params'] = $request['params'];
-        }
-        if (!empty($request['url'])) {
-            $data['url'] = $request['url'];
-        }
-        if (!empty($request['detail'])) {
-            $data['detail'] = $request['detail'];
-        }
-        if (!empty($request['status'])) {
-            $data['status'] = $request['status'];
+        $model = DB::table('products')->where('uuid', $uuid)->first();
+        $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $model);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
         }
 
-        $result = DB::table('products')->where('user_id', $userId)->where('uuid', $uuid)->update($data);
+        $data = ['updated_at' => time()];
+        if (!$code) {
+            $data['code'] = $code;
+        }
+        if (!$name) {
+            $data['name'] = $name;
+        }
+        if (!$alias) {
+            $data['alias'] = $alias;
+        }
+        if (!$attrs) {
+            $data['attrs'] = $attrs;
+        }
+        if (!$params) {
+            $data['params'] = $params;
+        }
+        if (!$url) {
+            $data['url'] = $url;
+        }
+        if (!$detail) {
+            $data['detail'] = $detail;
+        }
+        if ($status >= 0) {
+            $data['status'] = $status;
+        }
+
+        $result = DB::table('products')->where('uuid', $uuid)->update($data);
         if (!$result) {
             return response()->json(config('tips.product.edit.failure'));
         }
+
         return response()->json([
             'code' => 0,
             'msg' => 'The product edit successfully',
@@ -142,12 +158,18 @@ class Product extends Model
 
     public static function del(Request $request, $uuid)
     {
-        $userId = $request->user->id;
+        $model = DB::table('products')->where('uuid', $uuid)->first();
+        $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $model, 1);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
 
-        $result = DB::table('products')->where('user_id', $userId)->where('uuid', $uuid)->delete();
+        $result = DB::table('products')->where('uuid', $uuid)->delete();
         if (!$result) {
             return response()->json(config('tips.product.delete.failure'));
         }
+
         return response()->json([
                 'code' => 0,
                 'msg' => 'The product delete successfully',

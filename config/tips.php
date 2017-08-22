@@ -254,9 +254,11 @@ return [
             'code' => 100312,
             'msg' => 'The product is empty',
         ],
-        'existing' => [
-            'code' => 100313,
-            'msg' => 'The product code is existing',
+        'code'=>[
+            'existing' => [
+                'code' => 100313,
+                'msg' => 'The product code is existing',
+            ],
         ],
         'edit' => [
             'failure' => [

@@ -8,23 +8,20 @@ use Illuminate\Support\Facades\DB;
 
 class Article extends Model
 {
-    public static function index(Request $request)
+    public static function index(Request $request, $offset = 0, $limit = 1000)
     {
-        $userId = $request->user->id;
-        $offset = $request->input('pos', 0);
-        $limit = $request->input('count', 10);
+        $userIds = User::getUidsInSameGroup($request->user);
 
-        $datas = DB::table('articles')->where('user_id', $userId)->offset($offset)->limit($limit)->get();
-        $count = 1;//默认有数据
-        if ($offset == 0) {
-            $count = DB::table('articles')->where('user_id', $userId)->count();
-        }
+        $count = DB::table('articles')->whereIn('user_id', $userIds)->count();
         if (!$count) {
             return response()->json(config('tips.article.empty'));
         }
+
+        $datas = DB::table('articles')->whereIn('user_id', $userIds)->offset($offset)->limit($limit)->get();
+
         return response()->json([
                 'code' => 0,
-                'msg' => 'The articles from ' . $offset . ',len ' . $limit,
+                'msg' => 'The article from ' . $offset . ',len ' . $limit,
                 'data' => $datas,
                 'count' => $count,
             ]
@@ -33,29 +30,28 @@ class Article extends Model
 
     public static function store(Request $request)
     {
-        $userId = $request->user->id;
-        $request = $request->all();
-        if (empty($request['name'])) {
-            return response()->json(config('tips.article.name.required'));
+        $name = $request->input('name', null);
+        if (!$name) {
+            return response()->json(config('tips.articleCate.name.required'));
         }
-//        $count = DB::table('articles')->where('user_id', $userId)->where('name', $request['name'])->count();
-//        if ($count) {
-//            return response()->json(config('tips.article.existing'));
-//        }
 
         $data = [
-            'user_id' => $userId,
+            'user_id' => $request->user->id,
             'uuid' => iGenerateUuid(),
+            'name' => $name,
+            'alias' => $request->input('alias', null),
+            'article_cate_id' => $request->input('article_cate_id', 0),
+            'tags' => $request->input('tags', null),
+            'picture' => $request->input('picture', null),
+            'url' => $request->input('url', null),
+            'detail' => $request->input('detail', null),
+            'click_num' => $request->input('click_num', 0),
+            'status' => $request->input('status', 0),
             'created_at' => time(),
-            'name' => $request['name'],
-            'article_cate_id' => !empty($request['article_cate_id']) ? $request['article_cate_id'] : 0,
-            'tags' => !empty($request['tags']) ? $request['tags'] : null,
-            'status' => !empty($request['status']) ? $request['status'] : 0,
             'updated_at' => time(),
-            //todo 更多字段...
         ];
-        $id = DB::table('articles')->insertGetId($data);
-        $data['id'] = $id;
+        DB::table('articles')->insertGetId($data);
+
         return response()->json([
             'code' => 0,
             'msg' => 'The article store successfully',
@@ -65,12 +61,18 @@ class Article extends Model
 
     public static function show(Request $request, $uuid)
     {
-        $userId = $request->user->id;
-
-        $data = DB::table('articles')->where('user_id', $userId)->where('uuid', $uuid)->first();
+        $data = DB::table('articles')->where('uuid', $uuid)->first();
         if (!$data) {
             return response()->json(config('tips.article.empty'));
         }
+
+        $data->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $data);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+        unset($data->permissionName);
+
         return response()->json([
                 'code' => 0,
                 'msg' => 'The article show successfully',
@@ -87,13 +89,6 @@ class Article extends Model
             return response()->json(config('tips.article.name.required'));
         }
 
-        //todo 非添加者应该可以操作(多用户)
-
-//        $count = DB::table('articles')->where('user_id', $userId)->where('name', $request['name'])->count();
-//        if ($count) {
-//            return response()->json(config('tips.article.existing'));
-//        }
-
         $data = ['updated_at' => time()];
 
         if (!empty($request['name'])) {
@@ -108,7 +103,6 @@ class Article extends Model
         if (!empty($request['status'])) {
             $data['status'] = $request['status'];
         }
-        // todo 更多字段...
 
         $result = DB::table('articles')->where('user_id', $userId)->where('uuid', $uuid)->update($data);
         if (!$result) {

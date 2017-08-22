@@ -14,9 +14,9 @@ class ArticleCatesController extends Controller
         $this->middleware(AdminAuthMiddleware::class);
     }
 
-    public function index(Request $request)
+    public function index(Request $request, $pos, $count = 1000)
     {
-        return ArticleCate::index($request);
+        return ArticleCate::index($request, $pos, $count);
     }
 
     public function store(Request $request)
