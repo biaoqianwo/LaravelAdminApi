@@ -30,6 +30,27 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::post('users/{uuid}', 'UsersController@edit');
     Route::delete('users/{uuid}', 'UsersController@destroy');
 
+    //articleCates
+    Route::get('articleCates', 'ArticleCatesController@index');
+    Route::post('articleCates', 'ArticleCatesController@store');
+    Route::get('articleCates/{uuid}', 'ArticleCatesController@show');
+    Route::post('articleCates/{uuid}', 'ArticleCatesController@edit');
+    Route::delete('articleCates/{uuid}', 'ArticleCatesController@destroy');
+
+    //articleTags
+    Route::get('articleTags', 'ArticleTagsController@index');
+    Route::post('articleTags', 'ArticleTagsController@store');
+    Route::get('articleTags/{uuid}', 'ArticleTagsController@show');
+    Route::post('articleTags/{uuid}', 'ArticleTagsController@edit');
+    Route::delete('articleTags/{uuid}', 'ArticleTagsController@destroy');
+
+    //article
+    Route::get('articles', 'ArticlesController@index');
+    Route::post('articles', 'ArticlesController@store');
+    Route::get('articles/{uuid}', 'ArticlesController@show');
+    Route::post('articles/{uuid}', 'ArticlesController@edit');
+    Route::delete('articles/{uuid}', 'ArticlesController@destroy');
+
     //productAttrs
     Route::get('productAttrs', 'ProductAttrsController@index');
     Route::post('productAttrs', 'ProductAttrsController@store');
@@ -50,21 +71,6 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::get('products/{uuid}', 'ProductsController@show');
     Route::post('products/{uuid}', 'ProductsController@edit');//上架下架也用此接口
     Route::delete('products/{uuid}', 'ProductsController@destroy');
-
-    //articleCates
-    Route::get('articleCates', 'ArticleCatesController@index');
-    Route::post('articleCates', 'ArticleCatesController@store');
-    Route::get('articleCates/{uuid}', 'ArticleCatesController@show');
-    Route::post('articleCates/{uuid}', 'ArticleCatesController@edit');
-    Route::delete('articleCates/{uuid}', 'ArticleCatesController@destroy');
-
-    //articleTags
-    Route::get('articleTags', 'ArticleTagsController@index');
-    Route::post('articleTags', 'ArticleTagsController@store');
-    Route::get('articleTags/{uuid}', 'ArticleTagsController@show');
-    Route::post('articleTags/{uuid}', 'ArticleTagsController@edit');
-    Route::delete('articleTags/{uuid}', 'ArticleTagsController@destroy');
-
 
     //files 在form中（非素材库中）
     Route::post('files/store', 'FilesController@store');//在form中（非素材库中）上传文件 file:file|file[]

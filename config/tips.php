@@ -99,162 +99,30 @@ return [
             ]
         ]
     ],
-    'product' => [
-        'empty' => [
-            'code' => 100201,
-            'msg' => 'The product is empty',
-        ],
-        'existing' => [
-            'code' => 100202,
-            'msg' => 'The product code is existing',
-        ],
-        'edit' => [
-            'failure' => [
-                'code' => 100203,
-                'msg' => 'The product edit unsuccessfully',
-            ]
-        ],
-        'delete' => [
-            'failure' => [
-                'code' => 100204,
-                'msg' => 'The product delete unsuccessfully',
-            ]
-        ]
-    ],
-    'productAttr' => [
-        'name' => [
-            'required' => [
-                'code' => 100300,
-                'msg' => 'The product attrs name should not be empty',
-            ]
-        ],
-        'empty' => [
-            'code' => 100301,
-            'msg' => 'The product attrs is empty',
-        ],
-        'existing' => [
-            'code' => 100302,
-            'msg' => 'The product attrs name is existing',
-        ],
-        'edit' => [
-            'failure' => [
-                'code' => 100303,
-                'msg' => 'The product attrs edit unsuccessfully',
-            ]
-        ],
-        'delete' => [
-            'failure' => [
-                'code' => 100304,
-                'msg' => 'The product attrs delete unsuccessfully',
-            ]
-        ]
-    ],
-    'productTag' => [
-        'name' => [
-            'required' => [
-                'code' => 100400,
-                'msg' => 'The product tag name should not be empty',
-            ]
-        ],
-        'empty' => [
-            'code' => 100401,
-            'msg' => 'The product tag is empty',
-        ],
-        'existing' => [
-            'code' => 100402,
-            'msg' => 'The product tag name is existing',
-        ],
-        'edit' => [
-            'failure' => [
-                'code' => 100403,
-                'msg' => 'The product tag edit unsuccessfully',
-            ]
-        ],
-        'delete' => [
-            'failure' => [
-                'code' => 100404,
-                'msg' => 'The product tag delete unsuccessfully',
-            ]
-        ]
-    ],
-    'file' => [
-        'empty' => [
-            'code' => 100501,
-            'msg' => 'The file is empty',
-        ],
-        'increment' => [
-            'failure' => [
-                'code' => 100502,
-                'msg' => 'The file increment unsuccessfully',
-            ]
-        ],
-        'decrement' => [
-            'failure' => [
-                'code' => 100503,
-                'msg' => 'The file decrement unsuccessfully',
-            ]
-        ],
-        'move' => [
-            'failure' => [
-                'code' => 100504,
-                'msg' => 'The file move unsuccessfully',
-            ]
-        ],
-    ],
-    'folder' => [
-        'empty' => [
-            'code' => 100505,
-            'msg' => 'The folder is empty',
-        ],
-        'format' => [
-            'code' => 100506,
-            'msg' => 'The folder name is not right',
-        ],
-        'existing' => [
-            'code' => 100507,
-            'msg' => 'The folder is existing',
-        ],
-        'edit' => [
-            'failure' => [
-                'code' => 100508,
-                'msg' => 'The folder unsuccessfully',
-            ]
-        ],
-        'delete' => [
-            'existFiles' => [
-                'code' => 100509,
-                'msg' => 'There are files in this folder',
-            ],
-            'failure' => [
-                'code' => 100510,
-                'msg' => 'The folder delete unsuccessfully',
-            ]
-        ],
-    ],
     'articleCate' => [
         'name' => [
             'required' => [
-                'code' => 100600,
+                'code' => 100201,
                 'msg' => 'The article cate name should not be empty',
             ]
         ],
         'empty' => [
-            'code' => 100601,
+            'code' => 100202,
             'msg' => 'The article cate is empty',
         ],
         'existing' => [
-            'code' => 100602,
+            'code' => 100203,
             'msg' => 'The article cate name is existing',
         ],
         'edit' => [
             'failure' => [
-                'code' => 100603,
+                'code' => 100204,
                 'msg' => 'The article cate edit unsuccessfully',
             ]
         ],
         'delete' => [
             'failure' => [
-                'code' => 100604,
+                'code' => 100205,
                 'msg' => 'The article cate delete unsuccessfully',
             ]
         ]
@@ -262,29 +130,195 @@ return [
     'articleTag' => [
         'name' => [
             'required' => [
-                'code' => 100600,
+                'code' => 100206,
                 'msg' => 'The article tag name should not be empty',
             ]
         ],
         'empty' => [
-            'code' => 100601,
+            'code' => 100207,
             'msg' => 'The article tag is empty',
         ],
         'existing' => [
-            'code' => 100602,
+            'code' => 100208,
             'msg' => 'The article tag name is existing',
         ],
         'edit' => [
             'failure' => [
-                'code' => 100603,
+                'code' => 100209,
                 'msg' => 'The article tag edit unsuccessfully',
             ]
         ],
         'delete' => [
             'failure' => [
-                'code' => 100604,
+                'code' => 100210,
                 'msg' => 'The article tag delete unsuccessfully',
             ]
         ]
+    ],
+    'article' => [
+        'name' => [
+            'required' => [
+                'code' => 100211,
+                'msg' => 'The name should not be empty',
+            ],
+        ],
+        'empty' => [
+            'code' => 100212,
+            'msg' => 'The article is empty',
+        ],
+        'existing' => [
+            'code' => 100213,
+            'msg' => 'The article code is existing',
+        ],
+        'edit' => [
+            'failure' => [
+                'code' => 100214,
+                'msg' => 'The article edit unsuccessfully',
+            ]
+        ],
+        'delete' => [
+            'failure' => [
+                'code' => 100215,
+                'msg' => 'The article delete unsuccessfully',
+            ]
+        ]
+    ],
+    'productAttr' => [
+        'name' => [
+            'required' => [
+                'code' => 100301,
+                'msg' => 'The product attrs name should not be empty',
+            ]
+        ],
+        'empty' => [
+            'code' => 100302,
+            'msg' => 'The product attrs is empty',
+        ],
+        'existing' => [
+            'code' => 100303,
+            'msg' => 'The product attrs name is existing',
+        ],
+        'edit' => [
+            'failure' => [
+                'code' => 100304,
+                'msg' => 'The product attrs edit unsuccessfully',
+            ]
+        ],
+        'delete' => [
+            'failure' => [
+                'code' => 100305,
+                'msg' => 'The product attrs delete unsuccessfully',
+            ]
+        ]
+    ],
+    'productTag' => [
+        'name' => [
+            'required' => [
+                'code' => 100306,
+                'msg' => 'The product tag name should not be empty',
+            ]
+        ],
+        'empty' => [
+            'code' => 100307,
+            'msg' => 'The product tag is empty',
+        ],
+        'existing' => [
+            'code' => 100308,
+            'msg' => 'The product tag name is existing',
+        ],
+        'edit' => [
+            'failure' => [
+                'code' => 100309,
+                'msg' => 'The product tag edit unsuccessfully',
+            ]
+        ],
+        'delete' => [
+            'failure' => [
+                'code' => 100310,
+                'msg' => 'The product tag delete unsuccessfully',
+            ]
+        ]
+    ],
+    'product' => [
+        'name' => [
+            'required' => [
+                'code' => 100311,
+                'msg' => 'The name should not be empty',
+            ],
+        ],
+        'empty' => [
+            'code' => 100312,
+            'msg' => 'The product is empty',
+        ],
+        'existing' => [
+            'code' => 100313,
+            'msg' => 'The product code is existing',
+        ],
+        'edit' => [
+            'failure' => [
+                'code' => 100314,
+                'msg' => 'The product edit unsuccessfully',
+            ]
+        ],
+        'delete' => [
+            'failure' => [
+                'code' => 100315,
+                'msg' => 'The product delete unsuccessfully',
+            ]
+        ]
+    ],
+    'file' => [
+        'empty' => [
+            'code' => 100401,
+            'msg' => 'The file is empty',
+        ],
+        'increment' => [
+            'failure' => [
+                'code' => 100402,
+                'msg' => 'The file increment unsuccessfully',
+            ]
+        ],
+        'decrement' => [
+            'failure' => [
+                'code' => 100403,
+                'msg' => 'The file decrement unsuccessfully',
+            ]
+        ],
+        'move' => [
+            'failure' => [
+                'code' => 100404,
+                'msg' => 'The file move unsuccessfully',
+            ]
+        ],
+    ],
+    'folder' => [
+        'empty' => [
+            'code' => 100405,
+            'msg' => 'The folder is empty',
+        ],
+        'format' => [
+            'code' => 100406,
+            'msg' => 'The folder name is not right',
+        ],
+        'existing' => [
+            'code' => 100407,
+            'msg' => 'The folder is existing',
+        ],
+        'edit' => [
+            'failure' => [
+                'code' => 100408,
+                'msg' => 'The folder unsuccessfully',
+            ]
+        ],
+        'delete' => [
+            'existFiles' => [
+                'code' => 100409,
+                'msg' => 'There are files in this folder',
+            ],
+            'failure' => [
+                'code' => 100410,
+                'msg' => 'The folder delete unsuccessfully',
+            ]
+        ],
     ],
 ];
