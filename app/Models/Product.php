@@ -34,29 +34,32 @@ class Product extends Model
     public static function store(Request $request)
     {
         $userId = $request->user->id;
-        $request = $request->all();
-        if (empty($request['name'])) {
+        $name = $request->input('name');
+        $code = $request->input('code');
+        if (!$name) {
             return response()->json(config('tips.product.name.required'));
         }
 
         if (!empty($request['code'])) {
-            $count = DB::table('products')->where('user_id', $userId)->where('code', $request['code'])->count();
+            $count = DB::table('products')->where('user_id', $userId)->where('code', $code)->count();
             if ($count) {
                 return response()->json(config('tips.product.existing'));
             }
         }
-
         $data = [
             'user_id' => $userId,
             'uuid' => iGenerateUuid(),
+            'code' => $code,
+            'name' => $name,
+            'attrs' => $request->input('attrs', null),
+            'alias' => $request->input('alias', null),
+            'picture' => $request->input('picture', null),
+            'tags' => $request->input('tags', null),
+            'url' => $request->input('url', null),
+            'detail' => $request->input('detail', null),
+            'status' => $request->input('status', 1),
             'created_at' => time(),
-            'name' => $request['name'],
-            'code' => $request['code'],
-            'attrs' => !empty($request['attrs']) ? $request['attrs'] : null,
-            'tags' => !empty($request['tags']) ? $request['tags'] : null,
-            'status' => !empty($request['status']) ? $request['status'] : 0,
             'updated_at' => time(),
-            //todo 更多字段...
         ];
         $id = DB::table('products')->insertGetId($data);
         $data['id'] = $id;
@@ -94,7 +97,6 @@ class Product extends Model
         //todo 非添加者应该可以操作(多用户)
 
         if (!empty($request['code'])) {
-
             $count = DB::table('products')->where('user_id', $userId)->where('code', $request['code'])->count();
             if ($count) {
                 return response()->json(config('tips.product.existing'));
@@ -102,11 +104,14 @@ class Product extends Model
         }
 
         $data = ['updated_at' => time()];
+        if (!empty($request['code'])) {
+            $data['code'] = $request['code'];
+        }
         if (!empty($request['name'])) {
             $data['name'] = $request['name'];
         }
-        if (!empty($request['code'])) {
-            $data['code'] = $request['code'];
+        if (!empty($request['alias'])) {
+            $data['alias'] = $request['alias'];
         }
         if (!empty($request['attrs'])) {
             $data['attrs'] = $request['attrs'];
@@ -114,10 +119,15 @@ class Product extends Model
         if (!empty($request['tags'])) {
             $data['tags'] = $request['tags'];
         }
+        if (!empty($request['url'])) {
+            $data['url'] = $request['url'];
+        }
+        if (!empty($request['detail'])) {
+            $data['detail'] = $request['detail'];
+        }
         if (!empty($request['status'])) {
             $data['status'] = $request['status'];
         }
-        //todo 更多字段...
 
         $result = DB::table('products')->where('user_id', $userId)->where('uuid', $uuid)->update($data);
         if (!$result) {

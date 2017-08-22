@@ -19,7 +19,7 @@ class ArticleCate extends Model
 {
     public static function index(Request $request)
     {
-        $userIds = User::getUidsByGroup($request->user->group);
+        $userIds = User::getUidsByGroup($request->user);
         $count = DB::table('article_cates')->whereIn('user_id', $userIds)->count();
         if (!$count) {
             return response()->json(config('tips.articleCate.empty'));
@@ -42,7 +42,7 @@ class ArticleCate extends Model
             return response()->json(config('tips.articleCate.name.required'));
         }
 
-        $userIds = User::getUidsByGroup($request->user->group);
+        $userIds = User::getUidsByGroup($request->user);
         $count = DB::table('article_cates')->whereIn('user_id', $userIds)->where('name', $name)->count();
         if ($count) {
             return response()->json(config('tips.articleCate.existing'));
@@ -73,21 +73,22 @@ class ArticleCate extends Model
 
     public static function show(Request $request, $uuid)
     {
-        $userId = $request->user->id;
-        $userIds = User::getUidsByGroup($request->user->group);
-        if (!in_array($userId, $userIds)) {
-            return response()->json(config('tips.user.id.noPermission'));
-        }
-
-        $data = DB::table('article_cates')->where('uuid', $uuid)->first();
-        if (!$data) {
+        $model = DB::table('article_cates')->where('uuid', $uuid)->first();
+        if (!$model) {
             return response()->json(config('tips.articleCate.empty'));
         }
 
+        $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $model);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
+        unset($model->permissionName);
         return response()->json([
                 'code' => 0,
                 'msg' => 'The article cate show successfully',
-                'data' => $data,
+                'data' => $model,
             ]
         );
     }

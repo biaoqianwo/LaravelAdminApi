@@ -174,13 +174,16 @@ class User extends Model
     }
 
     /**
-     * 根据管理员相同组下的管理员IDs
-     * @param $group
+     * 相同组下的管理员IDs
+     * @param $user
      * @return array
      */
-    public static function getUidsByGroup($group)
+    public static function getUidsByGroup($user)
     {
-        return DB::table('users')->where('group', $group)->pluck('id')->toArray();
+        if ($user->multi_user) {
+            return DB::table('users')->where('group', $user->group)->pluck('id')->toArray();
+        }
+        return [$user->id];
     }
 
 
