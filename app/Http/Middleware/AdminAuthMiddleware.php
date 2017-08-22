@@ -16,7 +16,11 @@ class AdminAuthMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $token = $request->input('token');
+        $token = $request->header('token');
+        if (!$token) {
+            $token = $request->input('token');
+        }
+
         if (!$token) {
             return response()->json(config('tips.token.empty'));
         }
