@@ -8,18 +8,22 @@ use Illuminate\Support\Facades\DB;
 
 class ProductAttr extends Model
 {
-    public static function index(Request $request)
+    public static function index(Request $request, $offset = 0, $limit = 1000)
     {
-        $userId = $request->user->id;
-
-        $datas = DB::table('product_attrs')->whereIn('user_id', [0, $userId])->get();
-        $count = DB::table('product_attrs')->whereIn('user_id', [0, $userId])->count();
-        if (!$count) {
-            return response()->json(config('tips.productAttr.empty'));
+        $hasPermission = User::hasPermission($request->user, generatePermissionName(__CLASS__, __FUNCTION__));
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
         }
+
+        $userIds = User::getUidsInSameGroup($request->user);
+        $userIds = array_merge([0], $userIds);
+
+        $count = DB::table('product_attrs')->whereIn('user_id', $userIds)->count();
+        $datas = DB::table('product_attrs')->whereIn('user_id', $userIds)->offset($offset)->limit($limit)->get();
+
         return response()->json([
                 'code' => 0,
-                'msg' => 'All product attrs',
+                'msg' => 'The product attr from ' . $offset . ',len ' . $limit,
                 'data' => $datas,
                 'count' => $count,
             ]
@@ -28,26 +32,35 @@ class ProductAttr extends Model
 
     public static function store(Request $request)
     {
-        $userId = $request->user->id;
+        $hasPermission = User::hasPermission($request->user, generatePermissionName(__CLASS__, __FUNCTION__));
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
+        $userIds = User::getUidsInSameGroup($request->user);
+        $userIds = array_merge([0], $userIds);
+
         $name = $request->input('name', null);
+        $description = $request->input('description', null);
         if (!$name) {
             return response()->json(config('tips.productAttr.name.required'));
         }
 
-        $count = DB::table('product_attrs')->whereIn('user_id', [0, $userId])->where('name', $name)->count();
+        $count = DB::table('product_attrs')->whereIn('user_id', $userIds)->where('name', $name)->count();
         if ($count) {
             return response()->json(config('tips.productAttr.existing'));
         }
 
         $data = [
-            'user_id' => $userId,
+            'user_id' => $request->user->id,
             'uuid' => iGenerateUuid(),
-            'created_at' => time(),
             'name' => $name,
+            'description' => $description,
+            'created_at' => time(),
             'updated_at' => time(),
         ];
-        $id = DB::table('product_attrs')->insertGetId($data);
-        $data['id'] = $id;
+        DB::table('product_attrs')->insertGetId($data);
+
         return response()->json([
             'code' => 0,
             'msg' => 'The product attr store successfully',
@@ -57,12 +70,20 @@ class ProductAttr extends Model
 
     public static function show(Request $request, $uuid)
     {
-        $userId = $request->user->id;
+        $userIds = User::getUidsInSameGroup($request->user);
+        $userIds = array_merge([0], $userIds);
 
-        $data = DB::table('product_attrs')->whereIn('user_id', [0, $userId])->where('uuid', $uuid)->first();
+        $data = DB::table('product_attrs')->whereIn('user_id', $userIds)->where('uuid', $uuid)->first();
         if (!$data) {
             return response()->json(config('tips.productAttr.empty'));
         }
+
+        $data->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $data);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+        unset($data->permissionName);
 
         return response()->json([
                 'code' => 0,
@@ -74,22 +95,37 @@ class ProductAttr extends Model
 
     public static function edit(Request $request, $uuid)
     {
-        $userId = $request->user->id;
+        $userIds = User::getUidsInSameGroup($request->user);
+        $userIds = array_merge([0], $userIds);
+
         $name = $request->input('name', null);
+        $description = $request->input('description', null);
         if (!$name) {
             return response()->json(config('tips.productAttr.name.required'));
         }
 
-        $count = DB::table('product_attrs')->whereIn('user_id', [0, $userId])->where('name', $name)->count();
+        $count = DB::table('product_attrs')->whereIn('user_id', $userIds)->where('name', $name)->count();
         if ($count) {
             return response()->json(config('tips.productAttr.existing'));
         }
 
-        $data = [
-            'name' => $name,
-            'updated_at' => time(),
-        ];
-        $result = DB::table('product_attrs')->where('user_id', $userId)->where('uuid', $uuid)->update($data);
+        $model = DB::table('articles')->where('uuid', $uuid)->first();
+        $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $model);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
+
+        $data = ['updated_at' => time(),];
+        if (!$name) {
+            $data['name'] = $name;
+        }
+        if (!$description) {
+            $data['description'] = $description;
+        }
+
+        $result = DB::table('product_attrs')->where('uuid', $uuid)->update($data);
         if (!$result) {
             return response()->json(config('tips.productAttr.edit.failure'));
         }
@@ -102,12 +138,18 @@ class ProductAttr extends Model
 
     public static function del(Request $request, $uuid)
     {
-        $userId = $request->user->id;
+        $model = DB::table('article_cates')->where('uuid', $uuid)->first();
+        $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $model, 1);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
 
-        $result = DB::table('product_attrs')->where('user_id', $userId)->where('uuid', $uuid)->delete();
+        $result = DB::table('product_attrs')->where('uuid', $uuid)->delete();
         if (!$result) {
             return response()->json(config('tips.productAttr.delete.failure'));
         }
+
         return response()->json([
                 'code' => 0,
                 'msg' => 'The product attr delete successfully',

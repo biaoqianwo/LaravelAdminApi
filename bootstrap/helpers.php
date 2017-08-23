@@ -66,9 +66,9 @@ function iCheckFile(\Illuminate\Http\UploadedFile $file)
     return true;
 }
 
-function iGenerateFileUrl($userId, $name = null)
+function iGenerateFileUrl($dir, $name = null)
 {
-    return !$name ? null : config('app.url') . 'storage' . '/' . $userId . '/' . $name . '###' . $userId;
+    return !$name ? null : config('app.url') . 'storage' . '/' . $dir . '/' . $name;
 }
 
 /**
@@ -76,7 +76,8 @@ function iGenerateFileUrl($userId, $name = null)
  * @param $function
  * @return string
  */
-function generatePermissionName($class,$function){
+function generatePermissionName($class, $function)
+{
     //App\Models\ArticleCate==>ArticleCate
-    return array_last(explode('\\',$class)).'.'.$function;
+    return array_last(explode('\\', $class)) . '.' . $function;
 }

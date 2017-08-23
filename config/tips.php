@@ -33,7 +33,7 @@ return [
                 'code' => 100103,
                 'msg' => 'The email should not be empty',
             ],
-            'email' => [
+            'format' => [
                 'code' => 100104,
                 'msg' => 'The email is not right',
             ],
@@ -51,7 +51,7 @@ return [
                 'code' => 100107,
                 'msg' => 'The name should not be empty',
             ],
-            'alpha' => [
+            'format' => [
                 'code' => 100108,
                 'msg' => 'The name is not right, only [a-zA-Z]',
             ],
@@ -277,18 +277,6 @@ return [
         'empty' => [
             'code' => 100401,
             'msg' => 'The file is empty',
-        ],
-        'increment' => [
-            'failure' => [
-                'code' => 100402,
-                'msg' => 'The file increment unsuccessfully',
-            ]
-        ],
-        'decrement' => [
-            'failure' => [
-                'code' => 100403,
-                'msg' => 'The file decrement unsuccessfully',
-            ]
         ],
         'move' => [
             'failure' => [

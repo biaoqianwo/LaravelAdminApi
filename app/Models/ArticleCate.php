@@ -20,6 +20,11 @@ class ArticleCate extends Model
 {
     public static function index(Request $request, $offset = 0, $limit = 1000)
     {
+        $hasPermission = User::hasPermission($request->user, generatePermissionName(__CLASS__, __FUNCTION__));
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
         $userIds = User::getUidsInSameGroup($request->user);
 
         $count = DB::table('article_cates')->whereIn('user_id', $userIds)->count();
@@ -40,6 +45,11 @@ class ArticleCate extends Model
 
     public static function store(Request $request)
     {
+        $hasPermission = User::hasPermission($request->user, generatePermissionName(__CLASS__, __FUNCTION__));
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
         $name = $request->input('name', null);
         if (!$name) {
             return response()->json(config('tips.articleCate.name.required'));
@@ -76,7 +86,9 @@ class ArticleCate extends Model
 
     public static function show(Request $request, $uuid)
     {
-        $data = DB::table('article_cates')->where('uuid', $uuid)->first();
+        $userIds = User::getUidsInSameGroup($request->user);
+
+        $data = DB::table('article_cates')->whereIn('user_id', $userIds)->where('uuid', $uuid)->first();
         if (!$data) {
             return response()->json(config('tips.articleCate.empty'));
         }

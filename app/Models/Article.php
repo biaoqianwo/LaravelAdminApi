@@ -10,8 +10,14 @@ class Article extends Model
 {
     public static function index(Request $request, $offset = 0, $limit = 1000)
     {
+        $hasPermission = User::hasPermission($request->user, generatePermissionName(__CLASS__, __FUNCTION__));
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
         $userIds = User::getUidsInSameGroup($request->user);
 
+        // todo 缓存
         $count = DB::table('articles')->whereIn('user_id', $userIds)->count();
         if (!$count) {
             return response()->json(config('tips.article.empty'));
@@ -30,6 +36,11 @@ class Article extends Model
 
     public static function store(Request $request)
     {
+        $hasPermission = User::hasPermission($request->user, generatePermissionName(__CLASS__, __FUNCTION__));
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
         $name = $request->input('name', null);
         if (!$name) {
             return response()->json(config('tips.articleCate.name.required'));
@@ -61,7 +72,9 @@ class Article extends Model
 
     public static function show(Request $request, $uuid)
     {
-        $data = DB::table('articles')->where('uuid', $uuid)->first();
+        $userIds = User::getUidsInSameGroup($request->user);
+
+        $data = DB::table('articles')->whereIn('user_id', $userIds)->where('uuid', $uuid)->first();
         if (!$data) {
             return response()->json(config('tips.article.empty'));
         }
@@ -83,31 +96,60 @@ class Article extends Model
 
     public static function edit(Request $request, $uuid)
     {
-        $userId = $request->user->id;
-        $request = $request->all();
-        if (empty($request['name'])) {
+        $name = $request->input('name', null);
+        $alias = $request->input('alias', null);
+        $article_cate_id = $request->input('article_cate_id', 0);
+        $tags = $request->input('tags', null);
+        $picture = $request->input('picture', null);
+        $url = $request->input('url', null);
+        $detail = $request->input('detail', null);
+        $click_num = $request->input('click_num', 0);
+        $status = $request->input('status', -1);
+        if ($name) {
             return response()->json(config('tips.article.name.required'));
         }
 
+        $model = DB::table('articles')->where('uuid', $uuid)->first();
+        $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $model);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
         $data = ['updated_at' => time()];
+        if (!$name) {
+            $data['name'] = $name;
+        }
+        if (!$alias) {
+            $data['alias'] = $alias;
+        }
+        if (!$article_cate_id) {
+            $data['article_cate_id'] = $article_cate_id;
+        }
+        if (!$tags) {
+            $data['tags'] = $tags;
+        }
+        if (!$picture) {
+            $data['picture'] = $picture;
+        }
+        if (!$url) {
+            $data['url'] = $url;
+        }
+        if (!$detail) {
+            $data['detail'] = $detail;
+        }
+        if (!$click_num) {
+            $data['click_num'] = $click_num;
+        }
+        if ($status >= 0) {
+            $data['status'] = $status;
+        }
 
-        if (!empty($request['name'])) {
-            $data['name'] = $request['name'];
-        }
-        if (!empty($request['article_cate_id'])) {
-            $data['article_cate_id'] = $request['article_cate_id'];
-        }
-        if (!empty($request['tags'])) {
-            $data['tags'] = $request['tags'];
-        }
-        if (!empty($request['status'])) {
-            $data['status'] = $request['status'];
-        }
-
-        $result = DB::table('articles')->where('user_id', $userId)->where('uuid', $uuid)->update($data);
+        $result = DB::table('articles')->where('uuid', $uuid)->update($data);
         if (!$result) {
             return response()->json(config('tips.article.edit.failure'));
         }
+
         return response()->json([
             'code' => 0,
             'msg' => 'The article edit successfully',
@@ -117,12 +159,18 @@ class Article extends Model
 
     public static function del(Request $request, $uuid)
     {
-        $userId = $request->user->id;
+        $model = DB::table('articles')->where('uuid', $uuid)->first();
+        $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $model, 1);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
 
-        $result = DB::table('articles')->where('user_id', $userId)->where('uuid', $uuid)->delete();
+        $result = DB::table('articles')->where('uuid', $uuid)->delete();
         if (!$result) {
             return response()->json(config('tips.article.delete.failure'));
         }
+
         return response()->json([
                 'code' => 0,
                 'msg' => 'The article delete successfully',

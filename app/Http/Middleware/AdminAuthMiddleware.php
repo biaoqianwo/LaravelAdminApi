@@ -25,7 +25,7 @@ class AdminAuthMiddleware
             return response()->json(config('tips.token.empty'));
         }
 
-        $user = User::getUser($token);
+        $user = User::getUserByToken($token);
         if (!$user) {
             return response()->json(config('tips.token.invalid'));
         }

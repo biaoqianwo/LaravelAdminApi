@@ -73,14 +73,12 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::delete('products/{uuid}', 'ProductsController@destroy');
 
     //files 在form中（非素材库中）
-    Route::post('files/store', 'FilesController@store');//在form中（非素材库中）上传文件 file:file|file[]
-    Route::post('files/{uuid}/dec', 'FilesController@dec');//被替换，使用数量减一
+
     //files 素材库中
     Route::get('files/{pos}/{count?}', 'FilesController@index');//查看文件
-    Route::post('files/media', 'FilesController@media');//从素材库上传文件 file:file|file[]
-    Route::post('files/{uuid}/using', 'FilesController@using');//使用
+    Route::post('files/store', 'FilesController@store');//上传文件 file:file|file[]
+    Route::post('files/{uuid}/move', 'FilesController@move');//移动(编辑)
     Route::post('files/{uuid}/del', 'FilesController@del');//删除
-    Route::post('files/{uuid}/move', 'FilesController@move');//移动
     //folders
     Route::post('folders', 'FoldersController@store');//添加文件夹
     Route::post('folders/{uuid}', 'FoldersController@edit');//编辑文件夹（修改名称）

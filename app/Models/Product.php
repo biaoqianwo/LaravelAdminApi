@@ -10,6 +10,11 @@ class Product extends Model
 {
     public static function index(Request $request, $offset = 0, $limit = 1000)
     {
+        $hasPermission = User::hasPermission($request->user, generatePermissionName(__CLASS__, __FUNCTION__));
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
         $userIds = User::getUidsInSameGroup($request->user);
 
         $count = DB::table('products')->whereIn('user_id', $userIds)->count();
@@ -29,8 +34,13 @@ class Product extends Model
 
     public static function store(Request $request)
     {
-        $name = $request->input('name');
-        $code = $request->input('code');
+        $hasPermission = User::hasPermission($request->user, generatePermissionName(__CLASS__, __FUNCTION__));
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
+        $name = $request->input('name', null);
+        $code = $request->input('code', null);
         if (!$name) {
             return response()->json(config('tips.product.name.required'));
         }
@@ -69,7 +79,9 @@ class Product extends Model
 
     public static function show(Request $request, $uuid)
     {
-        $data = DB::table('products')->where('uuid', $uuid)->first();
+        $userIds = User::getUidsInSameGroup($request->user);
+
+        $data = DB::table('products')->whereIn('user_id', $userIds)->where('uuid', $uuid)->first();
         if (!$data) {
             return response()->json(config('tips.product.empty'));
         }
