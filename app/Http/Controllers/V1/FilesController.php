@@ -29,6 +29,11 @@ class FilesController extends Controller
         return File::move($request, $uuid);
     }
 
+    public function rename(Request $request, $uuid)
+    {
+        return File::rename($request, $uuid);
+    }
+
     public function del(Request $request, $uuid)
     {
         return File::del($request, $uuid);

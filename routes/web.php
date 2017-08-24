@@ -17,8 +17,8 @@ Route::get('/', function () {
 
 
 //注册用户为超级管理员：邮箱或者用户名唯一
-Route::post('existEmail', 'RegisterController@existEmail');
-Route::post('existName', 'RegisterController@existName');
+Route::post('exist/email', 'RegisterController@existEmail');
+Route::post('exist/name', 'RegisterController@existName');
 Route::post('register', 'RegisterController@register');
 Route::post('login', 'LoginController@login');
 
@@ -72,12 +72,11 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::post('products/{uuid}', 'ProductsController@edit');//上架下架也用此接口
     Route::delete('products/{uuid}', 'ProductsController@destroy');
 
-    //files 在form中（非素材库中）
-
-    //files 素材库中
+    //files
     Route::get('files/{pos}/{count?}', 'FilesController@index');//查看文件
     Route::post('files/store', 'FilesController@store');//上传文件 file:file|file[]
-    Route::post('files/{uuid}/move', 'FilesController@move');//移动(编辑)
+    Route::post('files/{uuid}/move', 'FilesController@move');//移动
+    Route::post('files/{uuid}/rename', 'FilesController@rename');//重命名
     Route::post('files/{uuid}/del', 'FilesController@del');//删除
     //folders
     Route::post('folders', 'FoldersController@store');//添加文件夹

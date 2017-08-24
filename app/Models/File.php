@@ -89,7 +89,7 @@ class File extends Model
             'asc')->get();
 
         foreach ($datas as &$data) {
-            $data->url = iGenerateFileUrl($request->user->group, $data->name, $data->ext);
+            $data->url = iGenerateFileUrl($request->user->group, $data->uuid, $data->ext);
         }
 
         return response()->json([
@@ -149,6 +149,36 @@ class File extends Model
         return response()->json([
                 'code' => 0,
                 'msg' => 'The file move successfully',
+            ]
+        );
+    }
+
+    public static function rename(Request $request, $uuid)
+    {
+        $name = $request->input('name', null);
+        if (!$name) {
+            return response()->json(config('tips.file.name.required'));
+        }
+
+        $model = DB::table('files')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.articleCate.empty'));
+        }
+
+        $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
+        $hasPermission = User::hasPermission($request->user, $model);
+        if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
+        $result = DB::table('files')->where('uuid', $uuid)->update(['updated_at' => time(), 'name' => $name]);
+        if (!$result) {
+            return response()->json(config('tips.file.rename.failure'));
+        }
+
+        return response()->json([
+                'code' => 0,
+                'msg' => 'The file rename successfully',
             ]
         );
     }
