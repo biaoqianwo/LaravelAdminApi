@@ -367,30 +367,29 @@ class User extends Model
     public static function edit(Request $request, $uuid)
     {
         $name = $request->input('name', null);
-        if (!$name) {
-            return response()->json(config('tips.user.name.required'));
-        }
-        if (!iValidateString($name, 'alpha')) {
-            return response()->json(config('tips.user.name.format'));
-        }
-        if (!iValidateString($name, 'max:64')) {
-            return response()->json(config('tips.user.name.max'));
-        }
-        $count = DB::table('users')->where('group', $request->user->group)->where('name', $name)->count();
-        if ($count) {
-            return response()->json(config('tips.user.name.registered'));
+        if ($name) {
+            if (!iValidateString($name, 'alpha')) {
+                return response()->json(config('tips.user.name.format'));
+            }
+            if (!iValidateString($name, 'max:64')) {
+                return response()->json(config('tips.user.name.max'));
+            }
+            $count = DB::table('users')->where('group', $request->user->group)->where('name', $name)->count();
+            if ($count) {
+                return response()->json(config('tips.user.name.registered'));
+            }
         }
 
         $email = $request->input('email', null);
-        if (!$email) {
-            return response()->json(config('tips.user.email.required'));
-        }
-        if (!iValidateString($email, 'email')) {
-            return response()->json(config('tips.user.email.format'));
-        }
-        $count = DB::table('users')->where('group', $request->user->group)->where('email', $email)->count();
-        if ($count) {
-            return response()->json(config('tips.user.email.registered'));
+        if ($email) {
+            if (!iValidateString($email, 'email')) {
+                return response()->json(config('tips.user.email.format'));
+            }
+
+            $count = DB::table('users')->where('group', $request->user->group)->where('email', $email)->count();
+            if ($count) {
+                return response()->json(config('tips.user.email.registered'));
+            }
         }
 
         $data = ['updated_at' => time(),];
@@ -402,7 +401,7 @@ class User extends Model
         }
 
         $model = DB::table('users')->where('uuid', $uuid)->first();
-        if(!$model){
+        if (!$model) {
             return response()->json(config('tips.user.empty'));
         }
 
@@ -427,7 +426,7 @@ class User extends Model
     public static function del(Request $request, $uuid)
     {
         $model = DB::table('users')->where('uuid', $uuid)->first();
-        if(!$model){
+        if (!$model) {
             return response()->json(config('tips.user.empty'));
         }
 
