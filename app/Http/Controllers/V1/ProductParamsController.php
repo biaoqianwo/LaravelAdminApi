@@ -14,9 +14,9 @@ class ProductParamsController extends Controller
         $this->middleware(AdminAuthMiddleware::class);
     }
 
-    public function index(Request $request)
+    public function index(Request $request, $pos, $count = 1000)
     {
-        return ProductParam::index($request);
+        return ProductParam::index($request, $pos, $count);
     }
 
     public function store(Request $request)

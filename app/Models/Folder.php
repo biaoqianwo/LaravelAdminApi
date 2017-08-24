@@ -42,6 +42,7 @@ class Folder extends Model
         $data = [
             'user_id' => $request->user->id,
             'uuid' => iGenerateUuid(),
+            'dir' => $request->user->group,
             'folder' => $folder,
             'created_at' => time(),
             'updated_at' => time(),
@@ -70,13 +71,17 @@ class Folder extends Model
         }
 
         $model = DB::table('files')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.file.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model);
         if (!$hasPermission) {
             return response()->json(config('tips.user.id.noPermission'));
         }
 
-        $result = DB::table('files')->where('uuid', $uuid)->update(['folder' => $folder]);
+        $result = DB::table('files')->where('uuid', $uuid)->update(['updated_at' => time(), 'folder' => $folder]);
         if (!$result) {
             return response()->json(config('tips.folder.edit.failure'));
         }
@@ -95,6 +100,10 @@ class Folder extends Model
         }
 
         $model = DB::table('files')->where('uuid', $uuid)->first();
+        if (!$model) {
+            return response()->json(config('tips.file.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model, 1);
         if (!$hasPermission) {

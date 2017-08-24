@@ -61,7 +61,7 @@ class ArticleTag extends Model
             'intro' => $request->input('intro', null),
             'keywords' => $request->input('keywords', null),
             'description' => $request->input('description', null),
-            'status' => $request->input('status', 1),
+            'status' => (int)$request->input('status', 1),
             'created_at' => time(),
             'updated_at' => time(),
         ];
@@ -76,7 +76,6 @@ class ArticleTag extends Model
 
     public static function show(Request $request, $uuid)
     {
-        $userIds = User::getUidsInSameGroup($request->user);
         $data = DB::table('article_tags')->where('uuid', $uuid)->first();
         if (!$data) {
             return response()->json(config('tips.articleTag.empty'));
@@ -106,18 +105,21 @@ class ArticleTag extends Model
         $intro = $request->input('intro', null);
         $keywords = $request->input('keywords', null);
         $description = $request->input('description', null);
-        $status = $request->input('status', -1);
-        if (!$name) {
-            return response()->json(config('tips.articleTag.name.required'));
-        }
+        $status = (int)$request->input('status', -1);
 
-        $userIds = User::getUidsInSameGroup($request->user->group);
-        $count = DB::table('article_tags')->whereIn('user_id', $userIds)->where('name', $name)->count();
-        if ($count) {
-            return response()->json(config('tips.articleTag.existing'));
+        if($name){
+            $userIds = User::getUidsInSameGroup($request->user);
+            $count = DB::table('article_tags')->whereIn('user_id', $userIds)->where('name', $name)->count();
+            if ($count) {
+                return response()->json(config('tips.articleTag.existing'));
+            }
         }
 
         $model = DB::table('article_tags')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.articleCate.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model);
         if (!$hasPermission) {
@@ -125,25 +127,25 @@ class ArticleTag extends Model
         }
 
         $data = ['updated_at' => time()];
-        if (!$name) {
+        if ($name) {
             $data['name'] = $name;
         }
-        if (!$color) {
+        if ($color) {
             $data['color'] = $color;
         }
-        if (!$icon) {
+        if ($icon) {
             $data['icon'] = $icon;
         }
-        if (!$poster) {
+        if ($poster) {
             $data['poster'] = $poster;
         }
-        if (!$intro) {
+        if ($intro) {
             $data['intro'] = $intro;
         }
-        if (!$keywords) {
+        if ($keywords) {
             $data['keywords'] = $keywords;
         }
-        if (!$description) {
+        if ($description) {
             $data['description'] = $description;
         }
         if ($status >= 0) {
@@ -165,6 +167,10 @@ class ArticleTag extends Model
     public static function del(Request $request, $uuid)
     {
         $model = DB::table('article_tags')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.articleTag.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model, 1);
         if (!$hasPermission) {

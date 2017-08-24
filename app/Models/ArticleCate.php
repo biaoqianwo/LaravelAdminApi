@@ -71,7 +71,7 @@ class ArticleCate extends Model
             'intro' => $request->input('intro', null),
             'keywords' => $request->input('keywords', null),
             'description' => $request->input('description', null),
-            'status' => $request->input('status', 1),
+            'status' => (int)$request->input('status', 1),
             'created_at' => time(),
             'updated_at' => time(),
         ];
@@ -117,18 +117,21 @@ class ArticleCate extends Model
         $intro = $request->input('intro', null);
         $keywords = $request->input('keywords', null);
         $description = $request->input('description', null);
-        $status = $request->input('status', -1);
-        if (!$name) {
-            return response()->json(config('tips.articleCate.name.required'));
-        }
+        $status = (int)$request->input('status', -1);
 
-        $userIds = User::getUidsInSameGroup($request->user->group);
-        $count = DB::table('article_cates')->whereIn('user_id', $userIds)->where('name', $name)->count();
-        if ($count) {
-            return response()->json(config('tips.articleCate.existing'));
+        if($name){
+            $userIds = User::getUidsInSameGroup($request->user);
+            $count = DB::table('article_cates')->whereIn('user_id', $userIds)->where('name', $name)->count();
+            if ($count) {
+                return response()->json(config('tips.articleCate.existing'));
+            }
         }
 
         $model = DB::table('article_cates')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.articleCate.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model);
         if (!$hasPermission) {
@@ -136,25 +139,25 @@ class ArticleCate extends Model
         }
 
         $data = ['updated_at' => time()];
-        if (!$name) {
+        if ($name) {
             $data['name'] = $name;
         }
-        if (!$color) {
+        if ($color) {
             $data['color'] = $color;
         }
-        if (!$icon) {
+        if ($icon) {
             $data['icon'] = $icon;
         }
-        if (!$poster) {
+        if ($poster) {
             $data['poster'] = $poster;
         }
-        if (!$intro) {
+        if ($intro) {
             $data['intro'] = $intro;
         }
-        if (!$keywords) {
+        if ($keywords) {
             $data['keywords'] = $keywords;
         }
-        if (!$description) {
+        if ($description) {
             $data['description'] = $description;
         }
         if ($status >= 0) {
@@ -176,6 +179,10 @@ class ArticleCate extends Model
     public static function del(Request $request, $uuid)
     {
         $model = DB::table('article_cates')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.articleCate.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model, 1);
         if (!$hasPermission) {

@@ -57,18 +57,56 @@ function iGenerateUuid()
 
 function iCheckFile(\Illuminate\Http\UploadedFile $file)
 {
-    //todo ...
+    $ext = $file->getClientOriginalExtension();
+    switch ($ext) {
+        case 'jpeg':
+        case 'jpg':
+        case 'png':
+        case 'gif':
+        case 'ico':
+            return iCheckImg($file);
+            break;
+        case 'txt':
+        case 'md':
+        case 'doc':
+        case 'docx':
+        case 'xls':
+        case 'xlsx':
+        case 'ppt':
+        case 'pptx':
+            return iCheckDocument($file);
+            break;
+        default:
+            return false;
+    }
+
+}
+
+function iCheckImg(\Illuminate\Http\UploadedFile $file)
+{
+    if ($file->getSize() > 100000) {
+        exit('file max size is 100000 byte');
+    }
+
     list($width, $height) = getimagesize($file);
-    //$file->getSize(), $file->getClientOriginalExtension();
-    if ($width > 2000 || $height > 3000 || $file->getSize() > 100000) {
-        exit('file is too large!');
+    if ($width > 2000) {
+        exit('file max width is 2000px');
+    }
+    if ($height > 3000) {
+        exit('file max height is 3000px');
     }
     return true;
 }
 
-function iGenerateFileUrl($dir, $name = null)
+function iCheckDocument(\Illuminate\Http\UploadedFile $file)
 {
-    return !$name ? null : config('app.url') . 'storage' . '/' . $dir . '/' . $name;
+    return true;
+}
+
+
+function iGenerateFileUrl($dir, $name = null, $ext = null)
+{
+    return !$name ? null : config('app.url') . 'storage' . '/' . $dir . '/' . $name . '.' . $ext;
 }
 
 /**

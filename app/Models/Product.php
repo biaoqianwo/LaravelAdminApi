@@ -40,13 +40,12 @@ class Product extends Model
         }
 
         $name = $request->input('name', null);
-        $code = $request->input('code', null);
         if (!$name) {
             return response()->json(config('tips.product.name.required'));
         }
-
-        $userIds = User::getUidsInSameGroup($request->user);
-        if (!$code) {
+        $code = $request->input('code', null);
+        if ($code) {
+            $userIds = User::getUidsInSameGroup($request->user);
             $count = DB::table('products')->whereIn('user_id', $userIds)->where('code', $code)->count();
             if ($count) {
                 return response()->json(config('tips.product.code.existing'));
@@ -64,7 +63,7 @@ class Product extends Model
             'params' => $request->input('params', null),
             'url' => $request->input('url', null),
             'detail' => $request->input('detail', null),
-            'status' => $request->input('status', 1),
+            'status' => (int)$request->input('status', 1),
             'created_at' => time(),
             'updated_at' => time(),
         ];
@@ -110,13 +109,10 @@ class Product extends Model
         $params = $request->input('params', null);
         $url = $request->input('url', null);
         $detail = $request->input('detail', null);
-        $status = $request->input('status', -1);
-        if (!$name) {
-            return response()->json(config('tips.product.name.required'));
-        }
+        $status = (int)$request->input('status', -1);
 
-        $userIds = User::getUidsInSameGroup($request->user->group);
         if ($code) {
+            $userIds = User::getUidsInSameGroup($request->user);
             $count = DB::table('products')->whereIn('user_id', $userIds)->where('code', $code)->count();
             if ($count) {
                 return response()->json(config('tips.product.existing'));
@@ -124,6 +120,10 @@ class Product extends Model
         }
 
         $model = DB::table('products')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.product.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model);
         if (!$hasPermission) {
@@ -131,25 +131,25 @@ class Product extends Model
         }
 
         $data = ['updated_at' => time()];
-        if (!$code) {
+        if ($code) {
             $data['code'] = $code;
         }
-        if (!$name) {
+        if ($name) {
             $data['name'] = $name;
         }
-        if (!$alias) {
+        if ($alias) {
             $data['alias'] = $alias;
         }
-        if (!$attrs) {
+        if ($attrs) {
             $data['attrs'] = $attrs;
         }
-        if (!$params) {
+        if ($params) {
             $data['params'] = $params;
         }
-        if (!$url) {
+        if ($url) {
             $data['url'] = $url;
         }
-        if (!$detail) {
+        if ($detail) {
             $data['detail'] = $detail;
         }
         if ($status >= 0) {
@@ -171,6 +171,9 @@ class Product extends Model
     public static function del(Request $request, $uuid)
     {
         $model = DB::table('products')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.product.empty'));
+        }
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model, 1);
         if (!$hasPermission) {

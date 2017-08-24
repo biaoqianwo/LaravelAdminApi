@@ -51,13 +51,13 @@ class Article extends Model
             'uuid' => iGenerateUuid(),
             'name' => $name,
             'alias' => $request->input('alias', null),
-            'article_cate_id' => $request->input('article_cate_id', 0),
+            'article_cate_id' => (int)$request->input('article_cate_id', 0),
             'tags' => $request->input('tags', null),
             'picture' => $request->input('picture', null),
             'url' => $request->input('url', null),
             'detail' => $request->input('detail', null),
-            'click_num' => $request->input('click_num', 0),
-            'status' => $request->input('status', 0),
+            'click_num' => (int)$request->input('click_num', 0),
+            'status' => (int)$request->input('status', 0),
             'created_at' => time(),
             'updated_at' => time(),
         ];
@@ -98,18 +98,18 @@ class Article extends Model
     {
         $name = $request->input('name', null);
         $alias = $request->input('alias', null);
-        $article_cate_id = $request->input('article_cate_id', 0);
+        $article_cate_id = (int)$request->input('article_cate_id', 0);
         $tags = $request->input('tags', null);
         $picture = $request->input('picture', null);
         $url = $request->input('url', null);
         $detail = $request->input('detail', null);
-        $click_num = $request->input('click_num', 0);
-        $status = $request->input('status', -1);
-        if ($name) {
-            return response()->json(config('tips.article.name.required'));
-        }
+        $click_num = (int)$request->input('click_num', 0);
+        $status = (int)$request->input('status', -1);
 
         $model = DB::table('articles')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.article.empty'));
+        }
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model);
         if (!$hasPermission) {
@@ -117,28 +117,28 @@ class Article extends Model
         }
 
         $data = ['updated_at' => time()];
-        if (!$name) {
+        if ($name) {
             $data['name'] = $name;
         }
-        if (!$alias) {
+        if ($alias) {
             $data['alias'] = $alias;
         }
-        if (!$article_cate_id) {
+        if ($article_cate_id) {
             $data['article_cate_id'] = $article_cate_id;
         }
-        if (!$tags) {
+        if ($tags) {
             $data['tags'] = $tags;
         }
-        if (!$picture) {
+        if ($picture) {
             $data['picture'] = $picture;
         }
-        if (!$url) {
+        if ($url) {
             $data['url'] = $url;
         }
-        if (!$detail) {
+        if ($detail) {
             $data['detail'] = $detail;
         }
-        if (!$click_num) {
+        if ($click_num) {
             $data['click_num'] = $click_num;
         }
         if ($status >= 0) {
@@ -160,6 +160,10 @@ class Article extends Model
     public static function del(Request $request, $uuid)
     {
         $model = DB::table('articles')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.article.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model, 1);
         if (!$hasPermission) {

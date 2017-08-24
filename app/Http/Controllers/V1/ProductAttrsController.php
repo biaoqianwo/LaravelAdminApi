@@ -14,9 +14,9 @@ class ProductAttrsController extends Controller
         $this->middleware(AdminAuthMiddleware::class);
     }
 
-    public function index(Request $request)
+    public function index(Request $request, $pos, $count = 1000)
     {
-        return ProductAttr::index($request);
+        return ProductAttr::index($request, $pos, $count);
     }
 
     public function store(Request $request)

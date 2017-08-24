@@ -72,7 +72,6 @@ class ProductAttr extends Model
     {
         $userIds = User::getUidsInSameGroup($request->user);
         $userIds = array_merge([0], $userIds);
-
         $data = DB::table('product_attrs')->whereIn('user_id', $userIds)->where('uuid', $uuid)->first();
         if (!$data) {
             return response()->json(config('tips.productAttr.empty'));
@@ -95,21 +94,23 @@ class ProductAttr extends Model
 
     public static function edit(Request $request, $uuid)
     {
-        $userIds = User::getUidsInSameGroup($request->user);
-        $userIds = array_merge([0], $userIds);
-
         $name = $request->input('name', null);
         $description = $request->input('description', null);
-        if (!$name) {
-            return response()->json(config('tips.productAttr.name.required'));
+
+        if ($name) {
+            $userIds = User::getUidsInSameGroup($request->user);
+            $userIds = array_merge([0], $userIds);
+            $count = DB::table('product_attrs')->whereIn('user_id', $userIds)->where('name', $name)->count();
+            if ($count) {
+                return response()->json(config('tips.productAttr.existing'));
+            }
         }
 
-        $count = DB::table('product_attrs')->whereIn('user_id', $userIds)->where('name', $name)->count();
-        if ($count) {
-            return response()->json(config('tips.productAttr.existing'));
+        $model = DB::table('product_attrs')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.productAttr.empty'));
         }
 
-        $model = DB::table('articles')->where('uuid', $uuid)->first();
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model);
         if (!$hasPermission) {
@@ -118,10 +119,10 @@ class ProductAttr extends Model
 
 
         $data = ['updated_at' => time(),];
-        if (!$name) {
+        if ($name) {
             $data['name'] = $name;
         }
-        if (!$description) {
+        if ($description) {
             $data['description'] = $description;
         }
 
@@ -138,7 +139,11 @@ class ProductAttr extends Model
 
     public static function del(Request $request, $uuid)
     {
-        $model = DB::table('article_cates')->where('uuid', $uuid)->first();
+        $model = DB::table('product_attrs')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.productAttr.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model, 1);
         if (!$hasPermission) {

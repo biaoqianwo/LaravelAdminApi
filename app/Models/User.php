@@ -32,7 +32,8 @@ class User extends Model
     public static function getUserByToken($token)
     {
         $uuid = iDecodeToken($token)['uuid'];
-        $result = DB::table('users')->where('uuid', $uuid)->first();
+
+        $result = self::where('uuid', $uuid)->first();
 
         if ($result) {
             unset($result->pwd);
@@ -71,7 +72,7 @@ class User extends Model
             if (empty($user->permissionName)) {
                 return false;
             }
-            
+
             $permissions = json_decode($user->permissions, true);
             if (in_array($model, $permissions)) {
                 return true;
@@ -80,7 +81,7 @@ class User extends Model
         }
 
         //$model=Obj{user_id=1,permissionName='XXX.edit',...}
-        if (!is_object($model) || empty($model->user_id) || empty($model->permissionName)) {
+        if (!is_object($model) || empty($model->permissionName)) {
             return false;
         }
 
@@ -96,8 +97,11 @@ class User extends Model
             return true;
         } elseif ($user->is_super) {
             //超级管理员有权限
-            $tmp = self::find($model->user_id);
-            if ($user->group == $tmp->group) {
+            if (!empty($model->group) && $user->group == $model->group) {
+                return true;
+            }
+            $group = self::where('user_id', $model->user_id)->value('group');
+            if ($user->group == $group) {
                 return true;
             }
         } else {
@@ -321,6 +325,7 @@ class User extends Model
 
         $data = [
             'uuid' => iGenerateUuid(),
+            'user_id' => $request->user->id,
             'group' => $request->user->group,
             'name' => $name,
             'email' => $email,
@@ -341,7 +346,7 @@ class User extends Model
     {
         $data = DB::table('users')->where('group', $request->user->group)->where('uuid', $uuid)->first();
         if (!$data) {
-            return response()->json(config('tips.user.uuid.empty'));
+            return response()->json(config('tips.user.empty'));
         }
 
         $data->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
@@ -389,14 +394,18 @@ class User extends Model
         }
 
         $data = ['updated_at' => time(),];
-        if (!$name) {
+        if ($name) {
             $data['name'] = $name;
         }
-        if (!$email) {
+        if ($email) {
             $data['email'] = $email;
         }
 
         $model = DB::table('users')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.user.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model);
         if (!$hasPermission) {
@@ -418,9 +427,17 @@ class User extends Model
     public static function del(Request $request, $uuid)
     {
         $model = DB::table('users')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.user.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model, 1);
         if (!$hasPermission) {
+            return response()->json(config('tips.user.id.noPermission'));
+        }
+
+        if ($model->is_super) {
             return response()->json(config('tips.user.id.noPermission'));
         }
 

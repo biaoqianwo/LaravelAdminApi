@@ -32,9 +32,10 @@ class File extends Model
 
         //上传到服务器（屋里地址固定）
         $dir = $request->user->group;
-        $name = $uuid . '.' . $file->getClientOriginalExtension();
+        $name = $uuid;
+        $ext = $file->getClientOriginalExtension();
         $size = $file->getSize();
-        $file->storeAs('public/' . $dir . '/', $name);
+        $file->storeAs('public/' . $dir . '/', $name . '.' . $ext);
 
         //物理地址:storage/app/public/为根
         //or
@@ -48,15 +49,17 @@ class File extends Model
         $data = [
             'user_id' => $request->user->id,
             'uuid' => $uuid,
+            'dir' => $dir,
             'folder' => $folder,
             'name' => $name,
+            'ext' => $ext,
             'size' => $size,
             'media' => 1,
             'created_at' => time(),
             'updated_at' => time(),
         ];
         DB::table('files')->insertGetId($data);
-        $data['url'] = iGenerateFileUrl($dir, $name);
+        $data['url'] = iGenerateFileUrl($dir, $name, $ext);
         return $data;
     }
 
@@ -74,19 +77,19 @@ class File extends Model
         $folder = Folder::formatFolder($folder);
 
 
-        $count = DB::table('files')->whereIn('user_id', $userIds)->where('folder', '<>', $folder)->where('folder',
+        $count = DB::table('files')->whereIn('user_id', $userIds)->where('folder',
             'like', $folder . '%')->orderBy('folder', 'asc')->orderBy('name',
             'asc')->count();
         if (!$count) {
             return response()->json(config('tips.file.empty'));
         }
 
-        $datas = DB::table('files')->whereIn('user_id', $userIds)->where('folder', '<>', $folder)->where('folder',
+        $datas = DB::table('files')->whereIn('user_id', $userIds)->where('folder',
             'like', $folder . '%')->orderBy('folder', 'asc')->orderBy('name',
             'asc')->get();
 
         foreach ($datas as &$data) {
-            $data->url = iGenerateFileUrl($request->user->group, $data->name);
+            $data->url = iGenerateFileUrl($request->user->group, $data->name, $data->ext);
         }
 
         return response()->json([
@@ -138,14 +141,14 @@ class File extends Model
         $folder = $request->input('folder', '/');
         $folder = Folder::formatFolder($folder);
 
-        $result = DB::table('files')->where('uuid', $uuid)->update(['folder' => $folder]);
+        $result = DB::table('files')->where('uuid', $uuid)->update(['updated_at' => time(), 'folder' => $folder]);
         if (!$result) {
             return response()->json(config('tips.file.move.failure'));
         }
 
         return response()->json([
                 'code' => 0,
-                'msg' => 'The file decrement successfully',
+                'msg' => 'The file move successfully',
             ]
         );
     }
@@ -153,6 +156,10 @@ class File extends Model
     public static function del(Request $request, $uuid)
     {
         $model = DB::table('files')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.file.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model, 1);
         if (!$hasPermission) {
@@ -169,5 +176,46 @@ class File extends Model
                 'msg' => 'The file decrement successfully',
             ]
         );
+    }
+
+    /**
+     * 删除不用的图片的物理存储
+     */
+    public function delFileInHard()
+    {
+        $all = $using = [];
+
+        $datas = DB::table('files')->where('media', 0)->get();
+        foreach ($datas as $data) {
+            $user_id = $data->user_id;
+            $dir = $data->dir;
+            $uuid = $data->uuid;
+            $ext = $data->ext;
+            $all[] = $dir . $uuid . '.' . $ext;
+
+            //articles
+            $articles = DB::table('articles')->where('user_id', $user_id)->where('uuid', $uuid)->get();
+            foreach ($articles as $article) {
+                if (false !== strpos($article->detail, $uuid) || false !== strpos($article->picture, $uuid)) {
+                    $using[] = $dir . $uuid . '.' . $ext;
+                }
+            }
+
+            //products
+            $products = DB::table('products')->where('user_id', $user_id)->where('uuid', $uuid)->get();
+            foreach ($products as $product) {
+                if (false !== strpos($product->detail, $uuid) || false !== strpos($product->picture, $uuid)) {
+                    $using[] = $dir . $uuid . '.' . $ext;
+                }
+            }
+            // todo 其他表的图片
+        }
+
+        //notUse
+        $diffs = array_diff($all, $using);
+        foreach ($diffs as $diff) {
+            @unlink('public/' . $diff);
+        }
+        //finish
     }
 }

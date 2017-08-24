@@ -14,9 +14,9 @@ class ArticleTagsController extends Controller
         $this->middleware(AdminAuthMiddleware::class);
     }
 
-    public function index(Request $request)
+    public function index(Request $request, $pos, $count = 1000)
     {
-        return ArticleTag::index($request);
+        return ArticleTag::index($request, $pos, $count);
     }
 
     public function store(Request $request)

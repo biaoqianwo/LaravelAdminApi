@@ -37,18 +37,17 @@ class ProductParam extends Model
             return response()->json(config('tips.user.id.noPermission'));
         }
 
-        $userIds = User::getUidsInSameGroup($request->user);
-        $userIds = array_merge([0], $userIds);
-
         $name = $request->input('name', null);
         $description = $request->input('description', null);
-        if (!$name) {
-            return response()->json(config('tips.productParam.name.required'));
-        }
+        $values = $request->input('values', null);
 
-        $count = DB::table('product_params')->whereIn('user_id', $userIds)->where('name', $name)->count();
-        if ($count) {
-            return response()->json(config('tips.productParam.existing'));
+        if (!$name) {
+            $userIds = User::getUidsInSameGroup($request->user);
+            $userIds = array_merge([0], $userIds);
+            $count = DB::table('product_params')->whereIn('user_id', $userIds)->where('name', $name)->count();
+            if ($count) {
+                return response()->json(config('tips.productParam.existing'));
+            }
         }
 
         $data = [
@@ -56,6 +55,7 @@ class ProductParam extends Model
             'uuid' => iGenerateUuid(),
             'name' => $name,
             'description' => $description,
+            'values' => $values,
             'created_at' => time(),
             'updated_at' => time(),
         ];
@@ -72,7 +72,6 @@ class ProductParam extends Model
     {
         $userIds = User::getUidsInSameGroup($request->user);
         $userIds = array_merge([0], $userIds);
-
         $data = DB::table('product_params')->whereIn('user_id', $userIds)->where('uuid', $uuid)->first();
         if (!$data) {
             return response()->json(config('tips.productParam.empty'));
@@ -95,21 +94,25 @@ class ProductParam extends Model
 
     public static function edit(Request $request, $uuid)
     {
-        $userIds = User::getUidsInSameGroup($request->user);
-        $userIds = array_merge([0], $userIds);
-
         $name = $request->input('name', null);
         $description = $request->input('description', null);
+        $values = $request->input('values', null);
+
         if (!$name) {
-            return response()->json(config('tips.productParam.name.required'));
+            $userIds = User::getUidsInSameGroup($request->user);
+            $userIds = array_merge([0], $userIds);
+
+            $count = DB::table('product_params')->whereIn('user_id', $userIds)->where('name', $name)->count();
+            if ($count) {
+                return response()->json(config('tips.productParam.existing'));
+            }
         }
 
-        $count = DB::table('product_params')->whereIn('user_id', $userIds)->where('name', $name)->count();
-        if ($count) {
-            return response()->json(config('tips.productParam.existing'));
+        $model = DB::table('product_params')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.productParam.empty'));
         }
 
-        $model = DB::table('articles')->where('uuid', $uuid)->first();
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model);
         if (!$hasPermission) {
@@ -118,13 +121,15 @@ class ProductParam extends Model
 
 
         $data = ['updated_at' => time(),];
-        if (!$name) {
+        if ($name) {
             $data['name'] = $name;
         }
-        if (!$description) {
+        if ($description) {
             $data['description'] = $description;
         }
-
+        if ($values) {
+            $data['values'] = $values;
+        }
         $result = DB::table('product_params')->where('uuid', $uuid)->update($data);
         if (!$result) {
             return response()->json(config('tips.productParam.edit.failure'));
@@ -138,7 +143,11 @@ class ProductParam extends Model
 
     public static function del(Request $request, $uuid)
     {
-        $model = DB::table('article_cates')->where('uuid', $uuid)->first();
+        $model = DB::table('product_params')->where('uuid', $uuid)->first();
+        if(!$model){
+            return response()->json(config('tips.productParam.empty'));
+        }
+
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
         $hasPermission = User::hasPermission($request->user, $model, 1);
         if (!$hasPermission) {

@@ -14,9 +14,9 @@ class FilesController extends Controller
         $this->middleware(AdminAuthMiddleware::class);
     }
 
-    public function index(Request $request)
+    public function index(Request $request, $pos, $count = 1000)
     {
-        return File::index($request);
+        return File::index($request, $pos, $count);
     }
 
     public function store(Request $request)
