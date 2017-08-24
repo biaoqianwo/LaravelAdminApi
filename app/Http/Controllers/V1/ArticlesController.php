@@ -14,7 +14,7 @@ class ArticlesController extends Controller
         $this->middleware(AdminAuthMiddleware::class);
     }
 
-    public function index(Request $request, $pos, $count = 1000)
+    public function index(Request $request, $pos, $count = 100)
     {
         return Article::index($request, $pos, $count);
     }

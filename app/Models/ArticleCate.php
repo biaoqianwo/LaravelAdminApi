@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
  */
 class ArticleCate extends Model
 {
-    public static function index(Request $request, $offset = 0, $limit = 1000)
+    public static function index(Request $request, $offset = 0, $limit = 100)
     {
         $hasPermission = User::hasPermission($request->user, generatePermissionName(__CLASS__, __FUNCTION__));
         if (!$hasPermission) {

@@ -156,7 +156,7 @@ class File extends Model
     public static function del(Request $request, $uuid)
     {
         $model = DB::table('files')->where('uuid', $uuid)->first();
-        if(!$model){
+        if (!$model) {
             return response()->json(config('tips.file.empty'));
         }
 
@@ -166,7 +166,7 @@ class File extends Model
             return response()->json(config('tips.user.id.noPermission'));
         }
 
-        $result = DB::table('files')->where('uuid', $uuid)->update(['media', 0]);
+        $result = DB::table('files')->where('uuid', $uuid)->update(['media' => 0]);
         if (!$result) {
             return response()->json(config('tips.file.delete.failure'));
         }

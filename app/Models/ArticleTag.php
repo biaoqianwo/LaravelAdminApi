@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class ArticleTag extends Model
 {
-    public static function index(Request $request, $offset = 0, $limit = 1000)
+    public static function index(Request $request, $offset = 0, $limit = 100)
     {
         $hasPermission = User::hasPermission($request->user, generatePermissionName(__CLASS__, __FUNCTION__));
         if (!$hasPermission) {
@@ -117,7 +117,7 @@ class ArticleTag extends Model
 
         $model = DB::table('article_tags')->where('uuid', $uuid)->first();
         if(!$model){
-            return response()->json(config('tips.articleCate.empty'));
+            return response()->json(config('tips.articleTag.empty'));
         }
 
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
