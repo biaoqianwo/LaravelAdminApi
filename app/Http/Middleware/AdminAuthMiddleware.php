@@ -16,7 +16,7 @@ class AdminAuthMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $token = $request->header('token');
+        $token = $request->header('_token');
         if (!$token) {
             $token = $request->input('token');
         }
