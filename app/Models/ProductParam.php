@@ -53,7 +53,7 @@ class ProductParam extends Model
             'user_id' => $request->user->id,
             'uuid' => iGenerateUuid(),
             'name' => $name,
-            'description' => $request->input('description', null),
+            'intro' => $request->input('intro', null),
             'values' => $request->input('values', null),
             'created_at' => time(),
             'updated_at' => time(),
@@ -121,7 +121,7 @@ class ProductParam extends Model
 
         $data = [
             'name' => $name,
-            'description' => $request->input('description', null),
+            'intro' => $request->input('intro', null),
             'values' => $request->input('values', null),
             'updated_at' => time(),
         ];

@@ -54,7 +54,7 @@ class ProductAttr extends Model
             'user_id' => $request->user->id,
             'uuid' => iGenerateUuid(),
             'name' => $name,
-            'description' => $request->input('description', null),
+            'intro' => $request->input('intro', null),
             'created_at' => time(),
             'updated_at' => time(),
         ];
@@ -118,7 +118,7 @@ class ProductAttr extends Model
 
         $data = [
             'name' => $name,
-            'description' => $request->input('description', null),
+            'intro' => $request->input('intro', null),
             'updated_at' => time(),
         ];
         $result = DB::table('product_attrs')->where('uuid', $uuid)->update($data);

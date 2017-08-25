@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS `articles` (
   `uuid` char(32) NOT NULL,
   `user_id` int(11) NOT NULL DEFAULT '0',
   `name` varchar(256) NOT NULL COMMENT '标题',
-  `alias` varchar(256) DEFAULT NULL COMMENT '别名，子标题等',
+  `alias` VARCHAR(256) DEFAULT NULL
+  COMMENT '别名，子标题等',
   `article_cate_id` int(11) NOT NULL DEFAULT '0' COMMENT '分类',
   `tags` varchar(256) DEFAULT NULL COMMENT '标签',
   `picture` varchar(256) DEFAULT NULL COMMENT '主图',
