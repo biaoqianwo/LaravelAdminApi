@@ -109,7 +109,8 @@ class ArticleTag extends Model
 
         if($name){
             $userIds = User::getUidsInSameGroup($request->user);
-            $count = DB::table('article_tags')->whereIn('user_id', $userIds)->where('name', $name)->count();
+            $count = DB::table('article_tags')->whereIn('user_id', $userIds)->where('name', $name)->where('uuid', '<>',
+                $uuid)->count();
             if ($count) {
                 return response()->json(config('tips.articleTag.existing'));
             }

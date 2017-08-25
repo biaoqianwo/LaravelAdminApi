@@ -24,56 +24,56 @@ Route::post('login', 'LoginController@login');
 
 Route::namespace('V1')->prefix('v1')->group(function () {
     //users
-    Route::get('users/{pos}/{count?}', 'UsersController@index')->defaults('pos', 0);
+    Route::get('users/{pos}/{count?}', 'UsersController@index');
     Route::post('users', 'UsersController@store');
     Route::get('users/{uuid}', 'UsersController@show');
     Route::post('users/{uuid}', 'UsersController@edit');
-    Route::delete('users/{uuid}', 'UsersController@destroy');
+    Route::post('users/{uuid}/del', 'UsersController@destroy');
 
     //articleCates
-    Route::get('articleCates/{pos}/{count?}', 'ArticleCatesController@index')->defaults('pos', 0);
+    Route::get('articleCates/{pos}/{count?}', 'ArticleCatesController@index');
     Route::post('articleCates', 'ArticleCatesController@store');
     Route::get('articleCates/{uuid}', 'ArticleCatesController@show');
     Route::post('articleCates/{uuid}', 'ArticleCatesController@edit');
-    Route::delete('articleCates/{uuid}', 'ArticleCatesController@destroy');
+    Route::post('articleCates/{uuid}/del', 'ArticleCatesController@destroy');
 
     //articleTags
-    Route::get('articleTags/{pos}/{count?}', 'ArticleTagsController@index')->defaults('pos', 0);
+    Route::get('articleTags/{pos}/{count?}', 'ArticleTagsController@index');
     Route::post('articleTags', 'ArticleTagsController@store');
     Route::get('articleTags/{uuid}', 'ArticleTagsController@show');
     Route::post('articleTags/{uuid}', 'ArticleTagsController@edit');
-    Route::delete('articleTags/{uuid}', 'ArticleTagsController@destroy');
+    Route::post('articleTags/{uuid}/del', 'ArticleTagsController@destroy');
 
     //article
-    Route::get('articles/{pos}/{count?}', 'ArticlesController@index')->defaults('pos', 0);
+    Route::get('articles/{pos}/{count?}', 'ArticlesController@index');
     Route::post('articles', 'ArticlesController@store');
     Route::get('articles/{uuid}', 'ArticlesController@show');
     Route::post('articles/{uuid}', 'ArticlesController@edit');
-    Route::delete('articles/{uuid}', 'ArticlesController@destroy');
+    Route::post('articles/{uuid}/del', 'ArticlesController@destroy');
 
     //productAttrs
-    Route::get('productAttrs/{pos}/{count?}', 'ProductAttrsController@index')->defaults('pos', 0);
+    Route::get('productAttrs/{pos}/{count?}', 'ProductAttrsController@index');
     Route::post('productAttrs', 'ProductAttrsController@store');
     Route::get('productAttrs/{uuid}', 'ProductAttrsController@show');
     Route::post('productAttrs/{uuid}', 'ProductAttrsController@edit');
-    Route::delete('productAttrs/{uuid}', 'ProductAttrsController@destroy');
+    Route::post('productAttrs/{uuid}/del', 'ProductAttrsController@destroy');
 
     //productParams
-    Route::get('productParams/{pos}/{count?}', 'ProductParamsController@index')->defaults('pos', 0);
+    Route::get('productParams/{pos}/{count?}', 'ProductParamsController@index');
     Route::post('productParams', 'ProductParamsController@store');
     Route::get('productParams/{uuid}', 'ProductParamsController@show');
     Route::post('productParams/{uuid}', 'ProductParamsController@edit');
-    Route::delete('productParams/{uuid}', 'ProductParamsController@destroy');
+    Route::post('productParams/{uuid}/del', 'ProductParamsController@destroy');
 
     //products
-    Route::get('products/{pos}/{count?}', 'ProductsController@index')->defaults('pos', 0);
+    Route::get('products/{pos}/{count?}', 'ProductsController@index');
     Route::post('products', 'ProductsController@store');
     Route::get('products/{uuid}', 'ProductsController@show');
     Route::post('products/{uuid}', 'ProductsController@edit');//上架下架也用此接口
-    Route::delete('products/{uuid}', 'ProductsController@destroy');
+    Route::post('products/{uuid}/del', 'ProductsController@destroy');
 
     //files
-    Route::get('files/{pos}/{count?}', 'FilesController@index')->defaults('pos', 0);//查看文件
+    Route::get('files/{pos}/{count?}', 'FilesController@index');//查看文件
     Route::post('files/store', 'FilesController@store');//上传文件 file:file|file[]
     Route::post('files/{uuid}/move', 'FilesController@move');//移动
     Route::post('files/{uuid}/rename', 'FilesController@rename');//重命名
@@ -81,5 +81,5 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     //folders
     Route::post('folders', 'FoldersController@store');//添加文件夹
     Route::post('folders/{uuid}', 'FoldersController@edit');//编辑文件夹（修改名称）
-    Route::delete('folders/{uuid}', 'FoldersController@destroy');//删除（内部存在文件时不能删除）
+    Route::post('folders/{uuid}/del', 'FoldersController@destroy');//删除（内部存在文件时不能删除）
 });

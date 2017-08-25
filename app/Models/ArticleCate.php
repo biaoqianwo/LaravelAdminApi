@@ -119,16 +119,17 @@ class ArticleCate extends Model
         $description = $request->input('description', null);
         $status = (int)$request->input('status', -1);
 
-        if($name){
+        if ($name) {
             $userIds = User::getUidsInSameGroup($request->user);
-            $count = DB::table('article_cates')->whereIn('user_id', $userIds)->where('name', $name)->count();
+            $count = DB::table('article_cates')->whereIn('user_id', $userIds)->where('name', $name)->where('uuid', '<>',
+                $uuid)->count();
             if ($count) {
                 return response()->json(config('tips.articleCate.existing'));
             }
         }
 
         $model = DB::table('article_cates')->where('uuid', $uuid)->first();
-        if(!$model){
+        if (!$model) {
             return response()->json(config('tips.articleCate.empty'));
         }
 
@@ -179,7 +180,7 @@ class ArticleCate extends Model
     public static function del(Request $request, $uuid)
     {
         $model = DB::table('article_cates')->where('uuid', $uuid)->first();
-        if(!$model){
+        if (!$model) {
             return response()->json(config('tips.articleCate.empty'));
         }
 

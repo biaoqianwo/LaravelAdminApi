@@ -113,7 +113,8 @@ class Product extends Model
 
         if ($code) {
             $userIds = User::getUidsInSameGroup($request->user);
-            $count = DB::table('products')->whereIn('user_id', $userIds)->where('code', $code)->count();
+            $count = DB::table('products')->whereIn('user_id', $userIds)->where('code', $code)->where('uuid', '<>',
+                $uuid)->count();
             if ($count) {
                 return response()->json(config('tips.product.existing'));
             }

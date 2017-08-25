@@ -102,7 +102,8 @@ class ProductParam extends Model
             $userIds = User::getUidsInSameGroup($request->user);
             $userIds = array_merge([0], $userIds);
 
-            $count = DB::table('product_params')->whereIn('user_id', $userIds)->where('name', $name)->count();
+            $count = DB::table('product_params')->whereIn('user_id', $userIds)->where('name', $name)->where('uuid', '<>',
+                $uuid)->count();
             if ($count) {
                 return response()->json(config('tips.productParam.existing'));
             }
