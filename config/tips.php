@@ -97,6 +97,34 @@ return [
             ]
         ]
     ],
+    'config' => [
+        'key' => [
+            'required' => [
+                'code' => 100501,
+                'msg' => '{"key":"The config key should not be empty"}',
+            ],
+            'existing'=>[
+                'code' => 100505,
+                'msg' => '{"key":"The config key is existing"}',
+            ],
+        ],
+        'empty' => [
+            'code' => 100502,
+            'msg' => 'The config is empty',
+        ],
+        'edit' => [
+            'failure' => [
+                'code' => 100503,
+                'msg' => 'The config edit unsuccessfully',
+            ]
+        ],
+        'delete' => [
+            'failure' => [
+                'code' => 100504,
+                'msg' => 'The config delete unsuccessfully',
+            ]
+        ]
+    ],
     'articleCate' => [
         'name' => [
             'required' => [

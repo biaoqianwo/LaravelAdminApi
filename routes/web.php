@@ -30,6 +30,13 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::post('users/{uuid}', 'UsersController@edit');
     Route::delete('users/{uuid}', 'UsersController@destroy');
 
+    //configs
+    Route::get('configs/{pos}/{count?}', 'ConfigsController@index');
+    Route::post('configs', 'ConfigsController@store');
+    Route::get('configs/{uuid}', 'ConfigsController@show');
+    Route::post('configs/{uuid}', 'ConfigsController@edit');
+    Route::delete('configs/{uuid}', 'ConfigsController@destroy');
+
     //articleCates
     Route::get('articleCates/{pos}/{count?}', 'ArticleCatesController@index');
     Route::post('articleCates', 'ArticleCatesController@store');

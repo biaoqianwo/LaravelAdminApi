@@ -324,8 +324,8 @@ class User extends Model
         }
 
         $data = [
-            'uuid' => iGenerateUuid(),
             'user_id' => $request->user->id,
+            'uuid' => iGenerateUuid(),
             'group' => $request->user->group,
             'name' => $name,
             'email' => $email,

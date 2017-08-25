@@ -52,8 +52,8 @@ class ArticleTag extends Model
         }
 
         $data = [
-            'uuid' => iGenerateUuid(),
             'user_id' => $request->user->id,
+            'uuid' => iGenerateUuid(),
             'name' => $name,
             'color' => $request->input('color', null),
             'icon' => $request->input('icon', null),

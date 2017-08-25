@@ -43,7 +43,7 @@ class Article extends Model
 
         $name = $request->input('name', null);
         if (!$name) {
-            return response()->json(config('tips.articleCate.name.required'));
+            return response()->json(config('tips.article.name.required'));
         }
 
         $data = [
