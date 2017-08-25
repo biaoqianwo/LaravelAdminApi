@@ -42,8 +42,6 @@ class Config extends Model
         }
 
         $key = $request->input('key', null);
-        $description = $request->input('description', null);
-        $value = $request->input('value', null);
         if (!$key) {
             return response()->json(config('tips.config.key.required'));
         }
@@ -58,8 +56,8 @@ class Config extends Model
             'user_id' => $request->user->id,
             'uuid' => iGenerateUuid(),
             'key' => $key,
-            'description' => $description,
-            'value' => $value,
+            'description' => $request->input('description', null),
+            'value' => $request->input('value', null),
             'created_at' => time(),
             'updated_at' => time(),
         ];
@@ -99,16 +97,15 @@ class Config extends Model
     public static function edit(Request $request, $uuid)
     {
         $key = $request->input('key', null);
-        $description = $request->input('description', null);
-        $value = $request->input('value', null);
+        if (!$key) {
+            return response()->json(config('tips.config.key.required'));
+        }
 
-        if ($key) {
-            $userIds = User::getUidsInSameGroup($request->user);
-            $count = DB::table('configs')->whereIn('user_id', $userIds)->where('key', $key)->where('uuid', '<>',
-                $uuid)->count();
-            if ($count) {
-                return response()->json(config('tips.config.key.existing'));
-            }
+        $userIds = User::getUidsInSameGroup($request->user);
+        $count = DB::table('configs')->whereIn('user_id', $userIds)->where('key', $key)->where('uuid', '<>',
+            $uuid)->count();
+        if ($count) {
+            return response()->json(config('tips.config.key.existing'));
         }
 
         $model = DB::table('configs')->where('uuid', $uuid)->first();
@@ -122,17 +119,12 @@ class Config extends Model
             return response()->json(config('tips.user.id.noPermission'));
         }
 
-        $data = ['updated_at' => time()];
-        if ($key) {
-            $data['key'] = $key;
-        }
-        if ($description) {
-            $data['description'] = $description;
-        }
-        if ($value) {
-            $data['value'] = $value;
-        }
-
+        $data = [
+            'key' => $key,
+            'description' => $request->input('description', null),
+            'value' => $request->input('value', null),
+            'updated_at' => time(),
+        ];
         $result = DB::table('configs')->where('uuid', $uuid)->update($data);
         if (!$result) {
             return response()->json(config('tips.config.edit.failure'));

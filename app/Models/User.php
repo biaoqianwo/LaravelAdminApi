@@ -367,50 +367,40 @@ class User extends Model
     public static function edit(Request $request, $uuid)
     {
         $name = $request->input('name', null);
+        if (!$name) {
+            return response()->json(config('tips.user.name.required'));
+        }
+        if (!iValidateString($name, 'alpha')) {
+            return response()->json(config('tips.user.name.format'));
+        }
+        if (!iValidateString($name, 'max:64')) {
+            return response()->json(config('tips.user.name.max'));
+        }
+        $count = DB::table('users')->where('group', $request->user->group)->where('name', $name)->count();
+        if ($count) {
+            return response()->json(config('tips.user.name.registered'));
+        }
+
         $email = $request->input('email', null);
-        $domain = $request->input('domain', null);
-        $mobile = $request->input('mobile', null);
-        $remark = $request->input('remark', null);
-        if ($name) {
-            if (!iValidateString($name, 'alpha')) {
-                return response()->json(config('tips.user.name.format'));
-            }
-            if (!iValidateString($name, 'max:64')) {
-                return response()->json(config('tips.user.name.max'));
-            }
-            $count = DB::table('users')->where('group', $request->user->group)->where('name', $name)->count();
-            if ($count) {
-                return response()->json(config('tips.user.name.registered'));
-            }
+        if (!$email) {
+            return response()->json(config('tips.user.email.required'));
+        }
+        if (!iValidateString($email, 'email')) {
+            return response()->json(config('tips.user.email.format'));
+        }
+        $count = DB::table('users')->where('group', $request->user->group)->where('email', $email)->count();
+        if ($count) {
+            return response()->json(config('tips.user.email.registered'));
         }
 
-        if ($email) {
-            if (!iValidateString($email, 'email')) {
-                return response()->json(config('tips.user.email.format'));
-            }
-
-            $count = DB::table('users')->where('group', $request->user->group)->where('email', $email)->count();
-            if ($count) {
-                return response()->json(config('tips.user.email.registered'));
-            }
-        }
-
-        $data = ['updated_at' => time(),];
-        if ($name) {
-            $data['name'] = $name;
-        }
-        if ($email) {
-            $data['email'] = $email;
-        }
-        if ($domain) {
-            $data['domain'] = $domain;
-        }
-        if ($mobile) {
-            $data['mobile'] = $mobile;
-        }
-        if ($remark) {
-            $data['remark'] = $remark;
-        }
+        $data = [
+            'name' => $name,
+            'email' => $email,
+            'domain' => $request->input('domain', $request->user->domain),
+            'mobile' => $request->input('mobile', null),
+            'remark' => $request->input('remark', null),
+            'updated_at' => time(),
+        ];
 
         $model = DB::table('users')->where('uuid', $uuid)->first();
         if (!$model) {

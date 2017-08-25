@@ -111,21 +111,14 @@ class ArticleCate extends Model
     public static function edit(Request $request, $uuid)
     {
         $name = $request->input('name', null);
-        $color = $request->input('color', null);
-        $icon = $request->input('icon', null);
-        $poster = $request->input('poster', null);
-        $intro = $request->input('intro', null);
-        $keywords = $request->input('keywords', null);
-        $description = $request->input('description', null);
-        $status = (int)$request->input('status', -1);
-
-        if ($name) {
-            $userIds = User::getUidsInSameGroup($request->user);
-            $count = DB::table('article_cates')->whereIn('user_id', $userIds)->where('name', $name)->where('uuid', '<>',
-                $uuid)->count();
-            if ($count) {
-                return response()->json(config('tips.articleCate.existing'));
-            }
+        if (!$name) {
+            return response()->json(config('tips.articleCate.name.required'));
+        }
+        $userIds = User::getUidsInSameGroup($request->user);
+        $count = DB::table('article_cates')->whereIn('user_id', $userIds)->where('name', $name)->where('uuid', '<>',
+            $uuid)->count();
+        if ($count) {
+            return response()->json(config('tips.articleCate.existing'));
         }
 
         $model = DB::table('article_cates')->where('uuid', $uuid)->first();
@@ -139,31 +132,17 @@ class ArticleCate extends Model
             return response()->json(config('tips.user.id.noPermission'));
         }
 
-        $data = ['updated_at' => time()];
-        if ($name) {
-            $data['name'] = $name;
-        }
-        if ($color) {
-            $data['color'] = $color;
-        }
-        if ($icon) {
-            $data['icon'] = $icon;
-        }
-        if ($poster) {
-            $data['poster'] = $poster;
-        }
-        if ($intro) {
-            $data['intro'] = $intro;
-        }
-        if ($keywords) {
-            $data['keywords'] = $keywords;
-        }
-        if ($description) {
-            $data['description'] = $description;
-        }
-        if ($status >= 0) {
-            $data['status'] = $status;
-        }
+        $data = [
+            'name' => $name,
+            'color' => $request->input('color', null),
+            'icon' => $request->input('icon', null),
+            'poster' => $request->input('poster', null),
+            'intro' => $request->input('intro', null),
+            'keywords' => $request->input('keywords', null),
+            'description' => $request->input('description', null),
+            'status' => (int)$request->input('status', 1),
+            'updated_at' => time(),
+        ];
 
         $result = DB::table('article_cates')->where('uuid', $uuid)->update($data);
         if (!$result) {

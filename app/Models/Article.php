@@ -57,7 +57,7 @@ class Article extends Model
             'url' => $request->input('url', null),
             'detail' => $request->input('detail', null),
             'click_num' => (int)$request->input('click_num', 0),
-            'status' => (int)$request->input('status', 0),
+            'status' => (int)$request->input('status', 1),
             'created_at' => time(),
             'updated_at' => time(),
         ];
@@ -120,7 +120,7 @@ class Article extends Model
             'url' => $request->input('url', null),
             'detail' => $request->input('detail', null),
             'click_num' => (int)$request->input('click_num', 0),
-            'status' => (int)$request->input('status', 0),
+            'status' => (int)$request->input('status', 1),
             'updated_at' => time(),
         ];
 
