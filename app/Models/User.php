@@ -274,11 +274,8 @@ class User extends Model
             return response()->json(config('tips.user.id.noPermission'));
         }
 
-        $user = $request->user;
-
-        $count = DB::table('users')->where('group', $user->group)->count();
-
-        $datas = DB::table('users')->where('group', $user->group)->offset($offset)->limit($limit)->get();
+        $count = DB::table('users')->where('group', $request->user->group)->count();
+        $datas = DB::table('users')->where('group', $request->user->group)->offset($offset)->limit($limit)->get();
 
         return response()->json([
                 'code' => 0,
@@ -330,6 +327,9 @@ class User extends Model
             'name' => $name,
             'email' => $email,
             'pwd' => iMd5('1234'),
+            'domain' => $request->input('domain', $request->user->domain),
+            'mobile' => $request->input('mobile', null),
+            'remark' => $request->input('remark', null),
             'created_at' => time(),
             'updated_at' => time(),
         ];
@@ -367,6 +367,10 @@ class User extends Model
     public static function edit(Request $request, $uuid)
     {
         $name = $request->input('name', null);
+        $email = $request->input('email', null);
+        $domain = $request->input('domain', null);
+        $mobile = $request->input('mobile', null);
+        $remark = $request->input('remark', null);
         if ($name) {
             if (!iValidateString($name, 'alpha')) {
                 return response()->json(config('tips.user.name.format'));
@@ -380,7 +384,6 @@ class User extends Model
             }
         }
 
-        $email = $request->input('email', null);
         if ($email) {
             if (!iValidateString($email, 'email')) {
                 return response()->json(config('tips.user.email.format'));
@@ -398,6 +401,15 @@ class User extends Model
         }
         if ($email) {
             $data['email'] = $email;
+        }
+        if ($domain) {
+            $data['domain'] = $domain;
+        }
+        if ($mobile) {
+            $data['mobile'] = $mobile;
+        }
+        if ($remark) {
+            $data['remark'] = $remark;
         }
 
         $model = DB::table('users')->where('uuid', $uuid)->first();
@@ -418,7 +430,7 @@ class User extends Model
 
         return response()->json([
             'code' => 0,
-            'msg' => 'The 用户 edit successfully',
+            'msg' => 'The user edit successfully',
             'data' => $data,
         ]);
     }

@@ -97,17 +97,12 @@ class Article extends Model
     public static function edit(Request $request, $uuid)
     {
         $name = $request->input('name', null);
-        $alias = $request->input('alias', null);
-        $article_cate_id = (int)$request->input('article_cate_id', 0);
-        $tags = $request->input('tags', null);
-        $picture = $request->input('picture', null);
-        $url = $request->input('url', null);
-        $detail = $request->input('detail', null);
-        $click_num = (int)$request->input('click_num', 0);
-        $status = (int)$request->input('status', -1);
+        if (!$name) {
+            return response()->json(config('tips.article.name.required'));
+        }
 
         $model = DB::table('articles')->where('uuid', $uuid)->first();
-        if(!$model){
+        if (!$model) {
             return response()->json(config('tips.article.empty'));
         }
         $model->permissionName = generatePermissionName(__CLASS__, __FUNCTION__);
@@ -116,34 +111,18 @@ class Article extends Model
             return response()->json(config('tips.user.id.noPermission'));
         }
 
-        $data = ['updated_at' => time()];
-        if ($name) {
-            $data['name'] = $name;
-        }
-        if ($alias) {
-            $data['alias'] = $alias;
-        }
-        if ($article_cate_id) {
-            $data['article_cate_id'] = $article_cate_id;
-        }
-        if ($tags) {
-            $data['tags'] = $tags;
-        }
-        if ($picture) {
-            $data['picture'] = $picture;
-        }
-        if ($url) {
-            $data['url'] = $url;
-        }
-        if ($detail) {
-            $data['detail'] = $detail;
-        }
-        if ($click_num) {
-            $data['click_num'] = $click_num;
-        }
-        if ($status >= 0) {
-            $data['status'] = $status;
-        }
+        $data = [
+            'name' => $name,
+            'alias' => $request->input('alias', null),
+            'article_cate_id' => (int)$request->input('article_cate_id', 0),
+            'tags' => $request->input('tags', null),
+            'picture' => $request->input('picture', null),
+            'url' => $request->input('url', null),
+            'detail' => $request->input('detail', null),
+            'click_num' => (int)$request->input('click_num', 0),
+            'status' => (int)$request->input('status', 0),
+            'updated_at' => time(),
+        ];
 
         $result = DB::table('articles')->where('uuid', $uuid)->update($data);
         if (!$result) {
@@ -160,7 +139,7 @@ class Article extends Model
     public static function del(Request $request, $uuid)
     {
         $model = DB::table('articles')->where('uuid', $uuid)->first();
-        if(!$model){
+        if (!$model) {
             return response()->json(config('tips.article.empty'));
         }
 
