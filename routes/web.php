@@ -56,7 +56,7 @@ Route::namespace('V1')->prefix('v1')->group(function () {
     Route::post('productAttrs', 'ProductAttrsController@store');
     Route::get('productAttrs/{uuid}', 'ProductAttrsController@show');
     Route::post('productAttrs/{uuid}', 'ProductAttrsController@edit');
-    Route::post('productAttrs/{uuid}/del', 'ProductAttrsController@destroy');
+    Route::delete('productAttrs/{uuid}', 'ProductAttrsController@destroy');
 
     //productParams
     Route::get('productParams/{pos}/{count?}', 'ProductParamsController@index');

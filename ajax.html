@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jQuery-Ajax-CORS-Demo</title>
+</head>
+<body>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<!--Microsoft CDN-->
+<!--http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js-->
+<script>
+    ////http://api.jquery.com/jQuery.ajax/
+
+    var url = "http://localhost:8000/v1/", token = "gwLTE1MDM2MzcwNTItMGM3ZWY2ZGFkMmMzNGYxNDk1ZmUwOTc1MGQ1MTM1YTc=bGl4aWFuZz";
+
+    //list
+    jQuery.ajax({
+        method: "GET",
+        url: url + "productAttrs/0",
+        headers: {token: token}
+    }).done(function (result) {
+        console.log(result);
+    });
+
+    //store
+    $.ajax({
+        method: "POST",
+        url: url + "productAttrs",
+        data: {name: "产品属性", description: "描述"},
+        headers: {token: token}
+    }).done(function (result) {
+        console.log(result);
+    });
+
+    //delete
+    $.ajax({
+        method: "DELETE",
+        url: url + "productAttrs/465bc3a71db94a5cbb5f0726d63c4896",
+        headers: {token: token}
+    }).done(function (result) {
+        console.log(result);
+    });
+</script>
+
+</body>
+</html>
