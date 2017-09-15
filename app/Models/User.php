@@ -42,6 +42,20 @@ class User extends Model
     }
 
     /**
+     * 根据uuid获取用户
+     * @param $uuid
+     * @return Model|null|static
+     */
+    public static function getUserByUuid($uuid)
+    {
+        $result = self::where('uuid', $uuid)->first();
+        if ($result) {
+            unset($result->pwd);
+        }
+        return $result;
+    }
+
+    /**
      * 相同组下的管理员IDs
      * @param $user
      * @return array

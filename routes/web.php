@@ -15,21 +15,17 @@ Route::get('/', function () {
     //return view('articles.index');
     return '正在紧张开发中......可联系QQ:704872038';
 });
-Route::get('/a/create', function () {
-    return view('articles.create');
-});
-Route::get('/a/view/{uuid}', function ($uuid) {
-    return view('articles.view', ['uuid' => $uuid]);
-});
-Route::get('/a/edit/{uuid}', function ($uuid) {
-    return view('articles.edit', ['uuid' => $uuid]);
-});
 
 //注册用户为超级管理员：邮箱或者用户名唯一
 Route::post('exist/email', 'RegisterController@existEmail');
 Route::post('exist/name', 'RegisterController@existName');
 Route::post('register', 'RegisterController@register');
 Route::post('login', 'LoginController@login');
+
+Route::namespace('V2')->prefix('v2')->group(function () {
+    Route::get('articles/{pos}/{count?}', 'ArticlesController@index');
+    Route::get('articles/{uuid}', 'ArticlesController@show');
+});
 
 Route::namespace('V1')->prefix('v1')->group(function () {
     //users

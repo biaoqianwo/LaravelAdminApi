@@ -33,7 +33,7 @@ class File extends Model
         //上传到服务器（屋里地址固定）
         $dir = $request->user->group;
         $name = $uuid;
-        $ext = $file->getClientOriginalExtension();
+        $ext = strtolower($file->getClientOriginalExtension());
         $size = $file->getSize();
         $file->storeAs('public/' . $dir . '/', $name . '.' . $ext);
 
