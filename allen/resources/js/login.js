@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  var url = "http://localhost:8000/";
+  var url = "http://mini.lixiang80.com/";
   $("#login").on("click", function () {
     $.ajax({
       method: "POST",

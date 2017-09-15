@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  var url = "http://localhost:8000/",uid = "0c7ef6dad2c34f1495fe09750d5135a7";
+  var url = "http://mini.lixiang80.com/",uid = "0c7ef6dad2c34f1495fe09750d5135a7";
 
   function GetQueryString(name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"),
