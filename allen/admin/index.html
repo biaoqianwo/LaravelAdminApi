@@ -24,7 +24,6 @@
         <a href="./index.html">最新</a>
         <a href="./all.html">所有</a>
         <a href="./create.html">添加+</a>
-        <a href="javascript:void(0);" id="logout">退出</a>
     </footer>
 </section>
 
@@ -32,5 +31,29 @@
 <script src="../resources/js/jquery.cookie.js"></script>
 <script src="../resources/js/simplemde.min.js"></script>
 <script src="../resources/js/admin.js"></script>
+<script>
+    $.ajax({
+        method: "GET",
+        url: url + "v1/articles/0/10",
+        headers: {token: token}
+    }).done(function (result) {
+        if (result.code == 0) {
+            var html = '';
+            $.map(result.data, function (item) {
+                html += '<div class="weui-panel__bd">' +
+                        '<div class="weui-media-box weui-media-box_text">' +
+                        '<h4 class="weui-media-box__title"><a href="./view.html?uuid=' + item.uuid + '">' + item.name + '</a></h4>' +
+                        '<p class="weui-media-box__desc">' + item.html + '</p>' +
+                        '<ul class="weui-media-box__info">' +
+                        '<li class="weui-media-box__info__meta">' + item.dateFormat + '</li>' +
+                        '<li class="weui-media-box__info__meta weui-media-box__info__meta_extra">hot:' + item.click_num + '</li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '</div>';
+            });
+            $("#articles").append(html);
+        }
+    });
+</script>
 </body>
 </html>

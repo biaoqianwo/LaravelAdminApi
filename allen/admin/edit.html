@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="../resources/css/stylesheet.css">
     <link rel="stylesheet" href="../resources/css/simplemde.min.css">
     <style>
-        .CodeMirror {height: 500px;}
+        .CodeMirror {
+            height: 500px;
+        }
     </style>
 </head>
 <body>
@@ -24,5 +26,17 @@
 <script src="../resources/js/jquery.cookie.js"></script>
 <script src="../resources/js/simplemde.min.js"></script>
 <script src="../resources/js/admin.js"></script>
+<script>
+    $.ajax({
+        method: "GET",
+        url: url + "v1/articles/" + uuid,
+        headers: {token: token}
+    }).done(function (result) {
+        if (result.code == 0) {
+            $("#name").val(result.data.name);
+            simplemde.value(result.data.detail);
+        }
+    });
+</script>
 </body>
 </html>

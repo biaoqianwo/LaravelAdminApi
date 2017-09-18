@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>Allen的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./resources/css/weui.min.css">
     <link rel="stylesheet" href="./resources/css/stylesheet.css">
-    <link rel="stylesheet" href="./resources/css/simplemde.min.css">
 </head>
 <body>
 
@@ -17,12 +15,24 @@
             <a href="http://mini.lixiang80.com">lixiang80</a>
             <a href="./index.html">最新</a>
             <a href="./all.html">所有</a>
-            <a href="./admin/login.html">登录</a>
         </span>
     </footer>
 </section>
 
 <script src="./resources/js/jquery.min.js"></script>
 <script src="./resources/js/home.js"></script>
+<script>
+    $.ajax({
+        method: "GET",
+        url: url + "v2/articles/" + uuid,
+        headers: {uid: uid}
+    }).done(function (result) {
+        if (result.code == 0) {
+            var html = '', item = result.data;
+            html += "<div><h1>" + item.name + "</h1><hr/>" + item.html + "</div>";
+            $("#article").append(html);
+        }
+    });
+</script>
 </body>
 </html>

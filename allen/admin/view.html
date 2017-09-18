@@ -21,7 +21,6 @@
         <a href="./index.html">最新</a>
         <a href="./all.html">所有</a>
         <a href="./create.html">添加+</a>
-        <a href="javascript:void(0);" id="logout">退出</a>
     </footer>
 </section>
 
@@ -29,5 +28,18 @@
 <script src="../resources/js/jquery.cookie.js"></script>
 <script src="../resources/js/simplemde.min.js"></script>
 <script src="../resources/js/admin.js"></script>
+<script>
+    $.ajax({
+        method: "GET",
+        url: url + "v1/articles/" + uuid,
+        headers: {token: token}
+    }).done(function (result) {
+        if (result.code == 0) {
+            var html = '', item = result.data;
+            html += "<div><h2>" + item.name + "</h2><a href=\"./edit.html?uuid=" + item.uuid + "\">编辑</a></li><hr/>" + item.html + "</div>";
+            $("#article").append(html);
+        }
+    });
+</script>
 </body>
 </html>
